@@ -5,7 +5,6 @@ const SocketIO = require("socket.io");
 class Server {
 	constructor(config) {
 		this.config = config;
-		this.currentSocket = null;
 	}
 
 	start() {
@@ -20,7 +19,6 @@ class Server {
 		let io = new SocketIO.Server(server);
 
 		io.on("connection", (socket) => {
-			this.currentSocket = socket;
 		});
 	}
 
