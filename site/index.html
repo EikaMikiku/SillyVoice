@@ -4,139 +4,74 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
+	<link rel="stylesheet" type="text/css" href="./css/toggle-button.css">
 	<script src="/socket.io/socket.io.js"></script>
-	<style>
-		:root {
-			color-scheme: only light;
-		}
-		body {
-			display: flex;
-			margin: 0;
-			height: 100vh;
-			justify-content: flex-start;
-			background: black;
-			flex-direction: column;
-			flex-wrap: nowrap;
-			align-items: center;
-			font-family: Segoe UI;
-			color: lightgray;
-		}
-		div {
-			display: flex;
-		}
-		.avatar {
-			justify-content: center;
-			margin-top: 50px;
-		}
-		.img {
-			background-image: url("./img/pis.png");
-			width: 100px;
-			height: 100px;
-			background-position: center;
-			background-size: 100%;
-			border-radius: 100%;
-			position: relative;
-			border: 1px solid black;
-			box-shadow: 0 0 10px white, 0 0 5px black;
-			box-sizing: border-box;
-		}
-		.img:before {
-			content: "";
-			height: 100%;
-			width: 100%;
-			background: rgba(255, 255, 255, 0.6);
-			display: block;
-			position: absolute;
-			border-radius: 100%;
-			transform: scale(calc(1 + var(--scale, 0) * 1.5));
-			box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.8);
-			z-index: -2;
-		}
-		.img:after {
-			content: "";
-			height: 100%;
-			width: 100%;
-			background: rgba(255, 255, 255, 0.45);
-			display: block;
-			position: absolute;
-			border-radius: 100%;
-			transform: scale(calc(1 + var(--scale, 0) * 3));
-			box-shadow: 0 0 20px rgba(255, 255, 255, 1);
-			z-index: -1;
-		}
-		.start {
-			position: absolute;
-			top:10%;
-			left: 0;
-			margin:auto;
-		}
-		.chat {
-			margin-top: 50px;
-			flex-direction: column;
-			height: calc(100% - 100px - 100px); /*200px = avatar, 100 = 50px * 2 margins*/
-			width: 100vw;
-			max-width: 850px;
-		}
-		.chat-messages {
-			flex: 1;
-			flex-direction: column;
-			overflow-y: auto;
-			border: 1px solid #444;
-			border-radius: 15px;
-			border-bottom: none;
-			padding: 5px;
-		}
-		.chat .inputs {
-			width: 100%;
-			flex-direction: row;
-			margin-top: 10px;
-			margin-bottom: 10px;
-		}
-		#chat-input {
-			flex: 1;
-		}
-		.message {
-			flex-direction: row;
-			margin-bottom: 10px;
-		}
-		.message-content {
-			flex: 1;
-			background: #111;
-			padding: 5px;
-			padding-top: 0;
-		}
-		.msg-img {
-			margin-right: 10px;
-		}
-		.msg-img img {
-			width: 80px;
-			height: 80px;
-			object-fit: cover;
-			border-radius: 100%;
-		}
-		#chat-input {
-			background: transparent;
-			border: 1px solid #444;
-			border-radius: 10px;
-			color: lightgray;
-			padding-left: 5px;
-		}
-		#chat-send {
-			background: transparent;
-			border: 1px solid #444;
-			border-radius: 10px;
-			color: lightgray;
-			font-weight: bold;
-			cursor: pointer;
-			margin-left: 10px;
-			width: 5vw;
-			min-width: 100px;
-		}
-	</style>
 </head>
 
 <body>
-	<button class="start" onClick="start()">Start</button>
+	<div class="settings">
+		<label>Setting #1:
+			<div>
+				<div class="toggle-button" for="toggler">
+					<input type="checkbox" class="checkbox" id="toggler">
+					<div class="knobs"></div>
+					<div class="layer"></div>
+				</div>
+			</div>
+		</label>
+		<label>Setting #2:
+			<div>
+				<div class="toggle-button" for="toggler">
+					<input type="checkbox" class="checkbox" id="toggler">
+					<div class="knobs"></div>
+					<div class="layer"></div>
+				</div>
+			</div>
+		</label>
+	</div>
+	<div class="settings" style="margin-top:65px">
+		<label>Setting #3:
+			<div>
+				<div class="toggle-button" for="toggler">
+					<input type="checkbox" class="checkbox" id="toggler">
+					<div class="knobs"></div>
+					<div class="layer"></div>
+				</div>
+			</div>
+		</label>
+		<label>Setting #4:
+			<div>
+				<div class="toggle-button" for="toggler">
+					<input type="checkbox" class="checkbox" id="toggler">
+					<div class="knobs"></div>
+					<div class="layer"></div>
+				</div>
+			</div>
+		</label>
+	</div>
+	<div class="settings" style="margin-top:130px">
+		<label>Setting #5:
+			<div>
+				<div class="toggle-button" for="toggler">
+					<input type="checkbox" class="checkbox" id="toggler">
+					<div class="knobs"></div>
+					<div class="layer"></div>
+				</div>
+			</div>
+		</label>
+		<label>Setting #6:
+			<div>
+				<div class="toggle-button" for="toggler">
+					<input type="checkbox" class="checkbox" id="toggler">
+					<div class="knobs"></div>
+					<div class="layer"></div>
+				</div>
+			</div>
+		</label>
+	</div>
+
+	<div class="settings">
+	</div>
 
 	<div class="avatar">
 		<div class="img"></div>
@@ -144,64 +79,35 @@
 	<div class="chat">
 		<div class="chat-messages">
 			<div class="message">
-				<div class="msg-img">
-					<img src="./img/pis.png">
-				</div>
-				<div class="message-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+				<div class="message-content">
+					<img src="./img/pis.png"><span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></div>
 			</div>
 			<div class="message user">
-				<div class="msg-img">
-					<img src="./img/user_default.webp">
-				</div>
-				<div class="message-content">Hi, this is a test.</div>
+				<div class="message-content"><img src="./img/user_default.webp"><span>Hi, this is a test.</span></div>
 			</div>
 			<div class="message">
-				<div class="msg-img">
-					<img src="./img/pis.png">
-				</div>
-				<div class="message-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+				<div class="message-content"><img src="./img/pis.png"><span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></div>
 			</div>
 			<div class="message user">
-				<div class="msg-img">
-					<img src="./img/user_default.webp">
-				</div>
-				<div class="message-content">Hi, this is a test.</div>
+				<div class="message-content"><img src="./img/user_default.webp"><span>Hi, this is a test.</span></div>
 			</div>
 			<div class="message">
-				<div class="msg-img">
-					<img src="./img/pis.png">
-				</div>
-				<div class="message-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+				<div class="message-content"><img src="./img/pis.png"><span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></div>
 			</div>
 			<div class="message user">
-				<div class="msg-img">
-					<img src="./img/user_default.webp">
-				</div>
-				<div class="message-content">Hi, this is a test.</div>
+				<div class="message-content"><img src="./img/user_default.webp"><span>Hi, this is a test.</span></div>
 			</div>
 			<div class="message">
-				<div class="msg-img">
-					<img src="./img/pis.png">
-				</div>
-				<div class="message-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+				<div class="message-content"><img src="./img/pis.png"><span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></div>
 			</div>
 			<div class="message user">
-				<div class="msg-img">
-					<img src="./img/user_default.webp">
-				</div>
-				<div class="message-content">Hi, this is a test.</div>
+				<div class="message-content"><img src="./img/user_default.webp"><span>Hi, this is a test.</span></div>
 			</div>
 			<div class="message">
-				<div class="msg-img">
-					<img src="./img/pis.png">
-				</div>
-				<div class="message-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+				<div class="message-content"><img src="./img/pis.png"><span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></div>
 			</div>
 			<div class="message user">
-				<div class="msg-img">
-					<img src="./img/user_default.webp">
-				</div>
-				<div class="message-content">Hi, this is a test.</div>
+				<div class="message-content"><img src="./img/user_default.webp"><span>Hi, this is a test.</span></div>
 			</div>
 		</div>
 		<div class="inputs">
@@ -219,19 +125,16 @@ let audioBuffer;
 function start() {
 	audioCtx = new AudioContext();
 	analyser = audioCtx.createAnalyser();
-	analyser.smoothingTimeConstant = 0.9;
+	analyser.smoothingTimeConstant = 0.8;
 	analyser.fftSize = 256;
 	audioBuffer = new Uint8Array(analyser.frequencyBinCount);
 
-	document.querySelector("button").remove();
 	let audio = document.createElement('audio');
-	audio.src = "./speech3.wav";
-	audio.loop = true;
+	audio.src = "./speech.wav";
 	audio.crossOrigin = "anonymous";
 	let input = audioCtx.createMediaElementSource(audio);
 	input.connect(analyser);
 	analyser.connect(audioCtx.destination);
-	audio.currentTime = 60*22+30;
 	audio.play();
 	borderUpdate();
 }
@@ -243,9 +146,12 @@ function borderUpdate() {
 	let normal = avg / 255;
 
 	let root = document.documentElement;
-	root.style.setProperty("--scale", (normal - 0.1) * 1.2);
+	root.style.setProperty("--audio-scale", (normal - 0.1) * 1.2);
 }
 
+window.onclick = () => {
+	if(!audioCtx) setTimeout(start, 100);
+};
 
 </script>
 </html>

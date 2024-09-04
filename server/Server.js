@@ -15,15 +15,11 @@ class Server {
 
 		let server = http.Server(app);
 
-		server.listen(this.config.port, () => this.onListen());
-		let io = new SocketIO.Server(server);
+		server.listen(this.config.port, () => log.info(`HTTP Server running: http://localhost:${this.config.port}/`));
+		this.io = new SocketIO.Server(server);
 
 		io.on("connection", (socket) => {
 		});
-	}
-
-	onListen() {
-		log.info(`HTTP Server running: http://localhost:${this.config.port}/`);
 	}
 }
 
