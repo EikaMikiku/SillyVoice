@@ -1,10 +1,15 @@
 const http = require("http");
 const express = require("express");
 const SocketIO = require("socket.io");
+const fs = require("fs");
 
 class Server {
-	constructor(config) {
+	constructor(config, tts, stt, llm) {
 		this.config = config;
+		this.tts = tts;
+		this.stt = stt;
+		this.llm = llm;
+		this.io = null;
 	}
 
 	start() {
@@ -18,7 +23,14 @@ class Server {
 		server.listen(this.config.port, () => log.info(`HTTP Server running: http://localhost:${this.config.port}/`));
 		this.io = new SocketIO.Server(server);
 
-		io.on("connection", (socket) => {
+		this.io.on("connection", (socket) => {
+			socket.on("chat-input", (text) => {
+				log.info("Server", "Received", text);
+			});
+
+			socket.emit("settings", {
+				cardImg: fs.readFileSync(this.llm.config.card, {encoding: "base64"})
+			});
 		});
 	}
 }
