@@ -149,6 +149,10 @@ div {
 }
 .message.user .message-content {
 	background: #111;
+	text-align: right;
+}
+.message.user .message-content span {
+	margin-right: 2px;
 }
 .message-content img {
 	margin-top: 5px;

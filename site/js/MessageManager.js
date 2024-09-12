@@ -9,12 +9,36 @@ class MessageManager {
 		//this.socket.on("");
 		this.socket.on("llm-genend", (msg) => {
 			let messagesContainer = document.getElementById("messages-container");
-			let elem = this.createMessageElement(msg.raw, msg.isUser);
-			messagesContainer.appendChild(elem);
+
+			let tempMsg = messagesContainer.querySelector(".temp");
+			if(tempMsg && !msg.isUser) {
+				tempMsg.classList.remove("temp");
+				let span = tempMsg.querySelector("span");
+				span.innerHTML = msg.raw;
+			} else {
+				let elem = this.createMessageElement(msg.raw, msg.isUser);
+				messagesContainer.appendChild(elem);
+			}
 
 			if(!msg.isUser) {
 				let sendButton = document.getElementById("chat-send");
 				sendButton.disabled = false;
+			}
+
+			this.scrollDown();
+		});
+
+		this.socket.on("llm-token", (token) => {
+			let messagesContainer = document.getElementById("messages-container");
+			let tempMsg = messagesContainer.querySelector(".temp");
+
+			if(!tempMsg) {
+				tempMsg = this.createMessageElement(token, false);
+				tempMsg.classList.add("temp");
+				messagesContainer.appendChild(tempMsg);
+			} else {
+				let span = tempMsg.querySelector("span");
+				span.innerHTML += token;
 			}
 
 			this.scrollDown();
@@ -49,12 +73,14 @@ class MessageManager {
 		contentDiv.className = "message-content";
 		msgDiv.appendChild(contentDiv);
 
-		let img = document.createElement("img");
-		img.src = isUser ? "./img/user_default.webp" : `/card?name=${window.settings.settings.card}`;
-		contentDiv.appendChild(img);
+		if(!isUser) {
+			let img = document.createElement("img");
+			img.src = `/card?name=${window.settings.settings.card}`;
+			contentDiv.appendChild(img);
+		}
 
 		let span = document.createElement("span");
-		span.innerText = txt;
+		span.innerHTML = txt || "&nbsp;";
 		contentDiv.appendChild(span);
 
 		return msgDiv;
