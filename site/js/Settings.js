@@ -11,6 +11,7 @@ class Settings {
 			console.log("Settings", settings);
 			this.charImg = `data:image/png;base64,${settings.cardImg}`;
 			document.getElementById("avatar-img").style.setProperty("--background", `url(${this.charImg})`);
+			window.messageManager.initChatLog(settings.currentChat);
 		});
 	}
 

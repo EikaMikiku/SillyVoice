@@ -80,7 +80,7 @@
 		<div id="avatar-img"></div>
 	</div>
 	<div class="chat">
-		<div class="chat-messages">
+		<div id="messages-container" class="chat-messages">
 			<!-- Sample tempalte for chat
 			<div class="message">
 				<div class="message-content">
@@ -100,9 +100,9 @@
 
 <script type="text/javascript">
 	let socket = io();
-	let audioManager = new AudioManager(socket);
-	let messageManager = new MessageManager(socket);
-	let settings = new Settings(socket);
+	window.audioManager = new AudioManager(socket);
+	window.messageManager = new MessageManager(socket);
+	window.settings = new Settings(socket);
 
 	/*
 	window.onclick = () => {

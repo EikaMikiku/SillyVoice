@@ -139,6 +139,12 @@ div {
 	padding-top: 1px;
 	min-width: calc(100% - 10px);
 }
+.message:first-child .message-content {
+	border-top-left-radius: 10px;
+}
+.message:last-child .message-content {
+	border-bottom-left-radius: 10px;
+}
 .message.user .message-content {
 	background: #111;
 }

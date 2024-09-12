@@ -16,4 +16,30 @@ class MessageManager {
 			chatInputEl.value = "";
 		});
 	}
+
+	initChatLog(messages) {
+		let messagesContainer = document.getElementById("messages-container");
+		for(let msg of messages) {
+			messagesContainer.appendChild(this.createMessageElement(msg.raw));
+		}
+	}
+
+	createMessageElement(txt, isUser) {
+		let msgDiv = document.createElement("div");
+		msgDiv.className = "message" + (isUser ? " user" : "");
+
+		let contentDiv = document.createElement("div");
+		contentDiv.className = "message-content";
+		msgDiv.appendChild(contentDiv);
+
+		let img = document.createElement("img");
+		img.src = "./img/user_default.webp";
+		contentDiv.appendChild(img);
+
+		let span = document.createElement("span");
+		span.innerText = txt;
+		contentDiv.appendChild(span);
+
+		return msgDiv;
+	}
 }
