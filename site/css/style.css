@@ -151,8 +151,20 @@ div {
 	background: #111;
 	text-align: right;
 }
+.message-content span > p {
+	margin: 0;
+}
+.message-content span {
+	display: block;
+}
 .message.user .message-content span {
 	margin-right: 2px;
+}
+.message-content q {
+	color: orange;
+}
+.message-content p em {
+	color: gray;
 }
 .message-content img {
 	margin-top: 5px;

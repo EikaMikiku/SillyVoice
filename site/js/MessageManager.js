@@ -6,7 +6,6 @@ class MessageManager {
 	}
 
 	bindEvents() {
-		//this.socket.on("");
 		this.socket.on("llm-genend", (msg) => {
 			let messagesContainer = document.getElementById("messages-container");
 
@@ -14,7 +13,7 @@ class MessageManager {
 			if(tempMsg && !msg.isUser) {
 				tempMsg.classList.remove("temp");
 				let span = tempMsg.querySelector("span");
-				span.innerHTML = msg.raw;
+				span.innerHTML = marked.parse(this.processText(msg.raw));
 			} else {
 				let elem = this.createMessageElement(msg.raw, msg.isUser);
 				messagesContainer.appendChild(elem);
@@ -38,7 +37,7 @@ class MessageManager {
 				messagesContainer.appendChild(tempMsg);
 			} else {
 				let span = tempMsg.querySelector("span");
-				span.innerHTML += token;
+				span.innerHTML = this.processText(span.innerHTML + token);
 			}
 
 			this.scrollDown();
@@ -49,6 +48,13 @@ class MessageManager {
 			let chatInputEl = document.getElementById("chat-input");
 			this.socket.emit("chat-input", chatInputEl.value);
 			chatInputEl.value = "";
+		});
+
+		document.getElementById("chat-input").addEventListener("keydown", (e) => {
+			if(e.key === "Enter") {
+				e.preventDefault();
+				document.getElementById("chat-send").click();
+			}
 		});
 	}
 
@@ -80,10 +86,14 @@ class MessageManager {
 		}
 
 		let span = document.createElement("span");
-		span.innerHTML = txt || "&nbsp;";
+		span.innerHTML = marked.parse(this.processText(txt)) || "&nbsp;";
 		contentDiv.appendChild(span);
 
 		return msgDiv;
+	}
+
+	processText(txt) {
+		return txt.replace(/"([^"]*)"/g, '<q>$1</q>'); //process quotes
 	}
 
 	scrollDown() {
