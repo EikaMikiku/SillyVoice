@@ -7,7 +7,18 @@ class MessageManager {
 
 	bindEvents() {
 		//this.socket.on("");
+		this.socket.on("llm-genend", (msg) => {
+			let messagesContainer = document.getElementById("messages-container");
+			let elem = this.createMessageElement(msg.raw, msg.isUser);
+			messagesContainer.appendChild(elem);
 
+			if(!msg.isUser) {
+				let sendButton = document.getElementById("chat-send");
+				sendButton.disabled = false;
+			}
+
+			this.scrollDown();
+		});
 
 		document.getElementById("chat-send").addEventListener("click", (e) => {
 			e.target.disabled = true;
@@ -26,6 +37,8 @@ class MessageManager {
 		for(let msg of messages) {
 			messagesContainer.appendChild(this.createMessageElement(msg.raw, msg.isUser));
 		}
+
+		this.scrollDown();
 	}
 
 	createMessageElement(txt, isUser) {
@@ -45,5 +58,13 @@ class MessageManager {
 		contentDiv.appendChild(span);
 
 		return msgDiv;
+	}
+
+	scrollDown() {
+		let messagesContainer = document.getElementById("messages-container");
+		messagesContainer.scrollTo({
+			top: messagesContainer.scrollHeight,
+			behaviour: "smooth"
+		});
 	}
 }

@@ -45,8 +45,8 @@ class Server {
 			this.io.emit("llm-token", txt);
 		});
 
-		this.llm.on("llm_genend_web", (txt) => {
-			this.io.emit("llm-genend", txt);
+		this.llm.on("llm_genend_web", (msg) => {
+			this.io.emit("llm-genend", msg);
 		});
 	}
 }
