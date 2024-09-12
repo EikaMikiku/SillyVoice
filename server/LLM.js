@@ -87,7 +87,7 @@ class LLM extends Eventful {
 		log.info("LLM", "Generation START");
 		let msg = this.currentChat.generateUserMessage(prompt);
 
-		this.provider.getTokenCount(msg, (count) => {
+		this.provider.getTokenCount(msg.formatted, (count) => {
 			this.currentChat.addMessage(msg.formatted, count, true, msg.raw);
 			this.notifyEvent("llm_genend_web", this.currentChat.messages[this.currentChat.messages.length - 1]);
 

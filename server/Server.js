@@ -20,6 +20,12 @@ class Server {
 
 		let server = http.Server(app);
 
+		app.get('/card', (req, res) => {
+			//For security purposes, going to be forcing the path to ./data/cards only
+			let name = req.query.name.split(/[\/\\]/g).pop();
+			res.sendFile(`${name}`, { root: "./data/cards" });
+		});
+
 		server.listen(this.config.port, () => log.info(`HTTP Server running: http://localhost:${this.config.port}/`));
 		this.io = new SocketIO.Server(server);
 
@@ -30,7 +36,7 @@ class Server {
 			});
 
 			socket.emit("settings", {
-				cardImg: fs.readFileSync(this.llm.config.card, {encoding: "base64"}),
+				card: this.llm.config.card,
 				currentChat: this.llm.currentChat.messages
 			});
 		});

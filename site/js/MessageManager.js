@@ -19,8 +19,12 @@ class MessageManager {
 
 	initChatLog(messages) {
 		let messagesContainer = document.getElementById("messages-container");
+		while(messagesContainer.firstElementChild) {
+			messagesContainer.removeChild(messagesContainer.firstElementChild);
+		}
+
 		for(let msg of messages) {
-			messagesContainer.appendChild(this.createMessageElement(msg.raw));
+			messagesContainer.appendChild(this.createMessageElement(msg.raw, msg.isUser));
 		}
 	}
 
@@ -33,7 +37,7 @@ class MessageManager {
 		msgDiv.appendChild(contentDiv);
 
 		let img = document.createElement("img");
-		img.src = "./img/user_default.webp";
+		img.src = isUser ? "./img/user_default.webp" : `/card?name=${window.settings.settings.card}`;
 		contentDiv.appendChild(img);
 
 		let span = document.createElement("span");

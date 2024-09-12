@@ -116,7 +116,6 @@ div {
 	border-radius: 15px;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
-	border-right: none;
 	padding: 5px;
 }
 .chat .inputs {
@@ -131,6 +130,9 @@ div {
 .message {
 	flex-direction: row;
 	margin-bottom: 5px;
+}
+.message:last-child {
+	margin-bottom: 0;
 }
 .message-content {
 	display: block;
