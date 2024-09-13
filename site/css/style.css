@@ -16,7 +16,9 @@
 	border-radius: 10px;
 	background: #6d6d6d;
 }
-
+*[disabled] {
+	opacity: 0.35;
+}
 body {
 	display: flex;
 	margin: 0;
@@ -31,6 +33,9 @@ body {
 }
 div {
 	display: flex;
+}
+code {
+	white-space: pre-wrap;
 }
 .avatar-container {
 	justify-content: center;

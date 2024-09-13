@@ -15,7 +15,7 @@ class MessageManager {
 				let span = tempMsg.querySelector("span");
 				span.innerHTML = marked.parse(this.processText(msg.raw));
 			} else {
-				let elem = this.createMessageElement(msg.raw, msg.isUser);
+				let elem = this.createMessageElement(msg.raw, msg.isUser, true);
 				messagesContainer.appendChild(elem);
 			}
 
@@ -32,7 +32,7 @@ class MessageManager {
 			let tempMsg = messagesContainer.querySelector(".temp");
 
 			if(!tempMsg) {
-				tempMsg = this.createMessageElement(token, false);
+				tempMsg = this.createMessageElement(token, false, false);
 				tempMsg.classList.add("temp");
 				messagesContainer.appendChild(tempMsg);
 			} else {
@@ -51,7 +51,7 @@ class MessageManager {
 		});
 
 		document.getElementById("chat-input").addEventListener("keydown", (e) => {
-			if(e.key === "Enter") {
+			if(e.key === "Enter" && !e.shiftKey) {
 				e.preventDefault();
 				document.getElementById("chat-send").click();
 			}
@@ -65,13 +65,13 @@ class MessageManager {
 		}
 
 		for(let msg of messages) {
-			messagesContainer.appendChild(this.createMessageElement(msg.raw, msg.isUser));
+			messagesContainer.appendChild(this.createMessageElement(msg.raw, msg.isUser, true));
 		}
 
 		this.scrollDown();
 	}
 
-	createMessageElement(txt, isUser) {
+	createMessageElement(txt, isUser, useMarkdown) {
 		let msgDiv = document.createElement("div");
 		msgDiv.className = "message" + (isUser ? " user" : "");
 
@@ -86,7 +86,12 @@ class MessageManager {
 		}
 
 		let span = document.createElement("span");
-		span.innerHTML = marked.parse(this.processText(txt)) || "&nbsp;";
+		txt = this.processText(txt) || "&nbsp;";
+		if(useMarkdown) {
+			span.innerHTML = marked.parse(txt);
+		} else {
+			span.innerHTML = txt;
+		}
 		contentDiv.appendChild(span);
 
 		return msgDiv;
