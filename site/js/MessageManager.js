@@ -57,6 +57,10 @@ class MessageManager {
 			if(e.key === "Enter" && !e.shiftKey) {
 				e.preventDefault();
 				document.getElementById("chat-send").click();
+			} else if(e.key === "ArrowUp") {
+				//get last user msg and edit it
+				let pens = document.querySelectorAll(".message.user pen");
+				pens[pens.length - 1].click();
 			}
 		});
 	}
@@ -84,6 +88,11 @@ class MessageManager {
 		contentDiv.className = "message-content";
 		msgDiv.appendChild(contentDiv);
 
+		let span = document.createElement("span");
+		txt = this.processText(txt) || "&nbsp;";
+		span.original = txt;
+		span.innerHTML = marked.parse(txt);
+
 		if(!isUser) {
 			let img = document.createElement("img");
 			img.src = `/card?name=${window.settings.settings.card}`;
@@ -100,12 +109,35 @@ class MessageManager {
 				};
 				contentDiv.appendChild(roll);
 			}
+		} else {
+			let pen = document.createElement("pen");
+			pen.innerText = "🖊";
+			pen.onclick = () => {
+				span.setAttribute("contenteditable", "");
+				let s = window.getSelection();
+				let r = document.createRange();
+				r.setStart(span, 0);
+				r.setEnd(span, 0);
+				s.removeAllRanges();
+				s.addRange(r);
+				span.onkeydown = (e) => {
+					if(span.hasAttribute("contenteditable")) {
+						if(e.key === "Enter" && !e.shiftKey) {
+							e.preventDefault();
+							this.socket.emit("edit-msg", idx, span.innerText);
+							span.removeAttribute("contenteditable");
+							document.getElementById("chat-input").focus();
+						} else if(e.key === "Escape") {
+							span.innerHTML = marked.parse(span.original);
+							span.removeAttribute("contenteditable");
+							document.getElementById("chat-input").focus();
+						}
+					}
+				};
+			};
+			contentDiv.appendChild(pen);
 		}
 
-		let span = document.createElement("span");
-		txt = this.processText(txt) || "&nbsp;";
-		span.original = txt;
-		span.innerHTML = marked.parse(txt);
 		contentDiv.appendChild(span);
 
 		return msgDiv;

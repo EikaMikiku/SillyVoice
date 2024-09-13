@@ -105,6 +105,11 @@ class LLM extends Eventful {
 		let lastUserMsg = this.currentChat.messages.pop();
 		this.stream(lastUserMsg.raw);
 	}
+
+	edit(idx, newTxt) {
+		this.currentChat.messages.splice(idx);
+		this.stream(newTxt);
+	}
 }
 
 module.exports = LLM;

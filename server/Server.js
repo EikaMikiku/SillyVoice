@@ -39,6 +39,10 @@ class Server {
 				this.llm.reroll(idx);
 			});
 
+			socket.on("edit-msg", (idx, newTxt) => {
+				this.llm.edit(idx, newTxt);
+			});
+
 			socket.emit("settings", {
 				card: this.llm.config.card,
 				currentChat: this.llm.currentChat.messages
