@@ -35,6 +35,10 @@ class Server {
 				this.llm.stream(text);
 			});
 
+			socket.on("reroll", (idx) => {
+				this.llm.reroll(idx);
+			});
+
 			socket.emit("settings", {
 				card: this.llm.config.card,
 				currentChat: this.llm.currentChat.messages

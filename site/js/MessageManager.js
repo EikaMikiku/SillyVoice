@@ -7,6 +7,7 @@ class MessageManager {
 
 	bindEvents() {
 		this.socket.on("llm-genend", (msg) => {
+			this.clearMsgsWithBiggerIdx(msg.idx); //Remove existing msgs with that idx or later
 			let messagesContainer = document.getElementById("messages-container");
 
 			let tempMsg = messagesContainer.querySelector(".temp");
@@ -14,14 +15,15 @@ class MessageManager {
 				tempMsg.classList.remove("temp");
 				let span = tempMsg.querySelector("span");
 				span.innerHTML = marked.parse(this.processText(msg.raw));
+				let roll = tempMsg.querySelector("roll");
+				tempMsg.dataset.idx = msg.idx;
 			} else {
-				let elem = this.createMessageElement(msg.raw, msg.isUser, true);
-				messagesContainer.appendChild(elem);
+				let msgEl = this.createMessageElement(msg.idx, msg.raw, msg.isUser);
+				messagesContainer.appendChild(msgEl);
 			}
 
 			if(!msg.isUser) {
-				let sendButton = document.getElementById("chat-send");
-				sendButton.disabled = false;
+				this.setAvailable();
 			}
 
 			this.scrollDown();
@@ -32,19 +34,20 @@ class MessageManager {
 			let tempMsg = messagesContainer.querySelector(".temp");
 
 			if(!tempMsg) {
-				tempMsg = this.createMessageElement(token, false, false);
+				tempMsg = this.createMessageElement(-1, token, false);
 				tempMsg.classList.add("temp");
 				messagesContainer.appendChild(tempMsg);
 			} else {
 				let span = tempMsg.querySelector("span");
-				span.innerHTML = this.processText(span.innerHTML + token);
+				span.original += token;
+				span.innerHTML = marked.parse(this.processText(span.original));
 			}
 
 			this.scrollDown();
 		});
 
 		document.getElementById("chat-send").addEventListener("click", (e) => {
-			e.target.disabled = true;
+			this.setWaiting();
 			let chatInputEl = document.getElementById("chat-input");
 			this.socket.emit("chat-input", chatInputEl.value);
 			chatInputEl.value = "";
@@ -65,15 +68,17 @@ class MessageManager {
 		}
 
 		for(let msg of messages) {
-			messagesContainer.appendChild(this.createMessageElement(msg.raw, msg.isUser, true));
+			let msgEl = this.createMessageElement(msg.idx, msg.raw, msg.isUser);
+			messagesContainer.appendChild(msgEl);
 		}
 
 		this.scrollDown();
 	}
 
-	createMessageElement(txt, isUser, useMarkdown) {
+	createMessageElement(idx, txt, isUser) {
 		let msgDiv = document.createElement("div");
 		msgDiv.className = "message" + (isUser ? " user" : "");
+		msgDiv.dataset.idx = idx;
 
 		let contentDiv = document.createElement("div");
 		contentDiv.className = "message-content";
@@ -83,15 +88,24 @@ class MessageManager {
 			let img = document.createElement("img");
 			img.src = `/card?name=${window.settings.settings.card}`;
 			contentDiv.appendChild(img);
+
+			if(idx !== 0) {
+				let roll = document.createElement("roll");
+				roll.innerText = "🔄";
+				if(idx === -1) {
+					roll.setAttribute("disabled", ""); //Disabled for temp msg
+				}
+				roll.onclick = () => {
+					this.rollClick(msgDiv.dataset.idx);
+				};
+				contentDiv.appendChild(roll);
+			}
 		}
 
 		let span = document.createElement("span");
 		txt = this.processText(txt) || "&nbsp;";
-		if(useMarkdown) {
-			span.innerHTML = marked.parse(txt);
-		} else {
-			span.innerHTML = txt;
-		}
+		span.original = txt;
+		span.innerHTML = marked.parse(txt);
 		contentDiv.appendChild(span);
 
 		return msgDiv;
@@ -107,5 +121,36 @@ class MessageManager {
 			top: messagesContainer.scrollHeight,
 			behaviour: "smooth"
 		});
+	}
+
+	setWaiting() {
+		document.getElementById("chat-send").disabled = true;
+		let rollBtns = document.querySelectorAll(".message-content roll");
+		for(let btn of rollBtns) {
+			btn.setAttribute("disabled", "");
+		}
+	}
+
+	setAvailable() {
+		document.getElementById("chat-send").disabled = false;
+		let rollBtns = document.querySelectorAll(".message-content roll");
+		for(let btn of rollBtns) {
+			btn.removeAttribute("disabled");
+		}
+	}
+
+	rollClick(idx) {
+		this.socket.emit("reroll", idx);
+		this.clearMsgsWithBiggerIdx(idx);
+		this.setWaiting();
+	}
+
+	clearMsgsWithBiggerIdx(idx) {
+		let msgs = document.querySelectorAll("#messages-container > .message");
+		for(let msg of msgs) {
+			if(parseInt(msg.dataset.idx) > idx - 1) {
+				msg.parentElement.removeChild(msg);
+			}
+		}
 	}
 }

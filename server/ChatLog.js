@@ -9,6 +9,7 @@ class ChatLog {
 
 	addMessage(formattedMsg, tokenCount, isUser, raw) {
 		this.messages.push({
+			idx: this.messages.length,
 			isUser,
 			tokens: tokenCount - 1, //Removing BOS token
 			value: formattedMsg,

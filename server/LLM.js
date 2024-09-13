@@ -97,6 +97,14 @@ class LLM extends Eventful {
 			this.provider.stream(genObj);
 		});
 	}
+
+	reroll(idx) {
+		//Remove msgs after idx
+		this.currentChat.messages.splice(idx);
+		//Get last msg (will be user, since you can only roll non user msgs)
+		let lastUserMsg = this.currentChat.messages.pop();
+		this.stream(lastUserMsg.raw);
+	}
 }
 
 module.exports = LLM;
