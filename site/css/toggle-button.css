@@ -60,16 +60,16 @@
 	border-radius: 100px;
 }
 
-.toggle-button input:checked:active + .knobs:before {
+.toggle-button :not(input:checked):active + .knobs:before {
 	margin-left: -26px;
 }
 
-.toggle-button input:checked + .knobs:before {
+.toggle-button :not(input:checked) + .knobs:before {
 	content: "OFF";
 	left: 42px;
 	background-color: #f44336;
 }
 
-.toggle-button input:checked ~ .layer {
+.toggle-button :not(input:checked) ~ .layer {
 	background-color: #554242;
 }

@@ -10,11 +10,13 @@
 	<script src="./js/marked.min.js"></script>
 	<script src="./js/MessageManager.js"></script>
 	<script src="./js/Settings.js"></script>
+	<script src="./js/VAD.js"></script>
+	<script type="text/javascript" src="./js/ort.min.js"></script>
 </head>
 
 <body>
 	<div class="settings" style="margin-top:5px">
-		<label>Setting #1:
+		<label>Use voice:
 			<div>
 				<div class="toggle-button" for="toggler">
 					<input type="checkbox" class="checkbox" id="toggler">
@@ -95,6 +97,7 @@
 		<div class="inputs">
 			<textarea id="chat-input" rows="3" placeholder="Your message here..."></textarea>
 			<button id="chat-send">Send</button>
+			<button id="vad-start">🎤</button>
 		</div>
 	</div>
 </body>
@@ -104,11 +107,6 @@
 	window.audioManager = new AudioManager(socket);
 	window.messageManager = new MessageManager(socket);
 	window.settings = new Settings(socket);
-
-	/*
-	window.onclick = () => {
-		setTimeout(audioManager.speak("./speech.wav"), 100);
-	};
-	*/
+	window.VAD = new VAD(socket);
 </script>
 </html>

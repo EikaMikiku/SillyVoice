@@ -1,5 +1,5 @@
 node_modules/
-models/
+/models/
 data/cards/*.png
 !data/cards/Vika.png
 data/chats/audio/*.wav
