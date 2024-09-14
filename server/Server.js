@@ -43,6 +43,10 @@ class Server {
 				this.llm.edit(idx, newTxt);
 			});
 
+			socket.on("vad-result", (wavBuffer) => {
+				fs.writeFileSync("./data/wau.wav", Int8Array.from(wavBuffer));
+			});
+
 			socket.emit("settings", {
 				card: this.llm.config.card,
 				currentChat: this.llm.currentChat.messages

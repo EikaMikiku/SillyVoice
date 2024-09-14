@@ -9,6 +9,9 @@ class VAD {
 		this.sessionParamH = new Float32Array(2 * 1 * 64).fill(0);
 		this.sessionParamC = new Float32Array(2 * 1 * 64).fill(0);
 		this.workletNode = null;
+		this.mediaSource = null;
+
+		this.rw = new RIFFWAVE();
 
 		//Chunks to keep before speech
 		this.prevChunksToKeep = 4; //1 chunk = 2048 / 16000 = 0.128 of a second
@@ -52,27 +55,25 @@ class VAD {
 
 				console.log("Created audio context", this.audioContext);
 
-				/*
-				this.scriptProcessor = this.audioContext.createScriptProcessor(2048, 1, 1);
-				source.connect(this.scriptProcessor);
-				this.scriptProcessor.connect(this.audioContext.destination);
-
-				this.scriptProcessor.onaudioprocess = async (event) => {
-					await this.processAudioEvent(event);
-				};
-				*/
-				await this.audioContext.audioWorklet.addModule('./js/vad-processor.js');
-                this.workletNode = new AudioWorkletNode(this.audioContext, 'vad-processor');
+				await this.audioContext.audioWorklet.addModule("./js/vad-processor.js");
+				this.workletNode = new AudioWorkletNode(this.audioContext, "vad-processor");
 				console.log("Created audio worklet node", this.workletNode);
 
-                this.workletNode.port.onmessage = async (event) => {
-                    if (event.data.type === 'audioData') {
-                        await this.processAudioData(event.data.audioData);
-                    }
-                };
+				this.workletNode.port.onmessage = async (event) => {
+					if(event.data.type === "audioData") {
+						await this.processAudioData(event.data.audioData);
+					}
+					if(event.data.type === "reset") {
+						console.log("RESET?");
+					}
+				};
+				this.workletNode.onprocessorerror = async (error) => {
+					alert("Audio worker Error:\n" + error);
+					console.error("Audio worker Error", error);
+				};
 
-				let source = this.audioContext.createMediaStreamSource(this.mediaStream);
-				source.connect(this.workletNode);
+				this.mediaSource = this.audioContext.createMediaStreamSource(this.mediaStream);
+				this.mediaSource.connect(this.workletNode);
 
 				document.getElementById("vad-start").innerText = "⏹";
 				this.activated = true;
@@ -111,26 +112,24 @@ class VAD {
 			//Speech started or continues
 			this.speechDetected = true;
 			this.savedDataChunks.push(inputData);
+			this.currentSilenceCounter = 0;
 		} else {
-			if(this.speechDetected) {
-				this.speechDetected = false;
-				this.savedDataChunks.push(inputData);
-				this.currentSilenceCounter = 0;
-			}
 			this.currentSilenceCounter++;
 			if(this.currentSilenceCounter === this.nextChunksToKeep && this.savedDataChunks.length > this.prevChunksToKeep) {
 				// Collection is over
+				this.savedDataChunks.push(inputData);
 				console.log("Collected", this.savedDataChunks);
 				this.sendData();
 				this.currentSilenceCounter = 0;
 				this.savedDataChunks = [];
+				this.speechDetected = false;
 			} else {
 				if(this.savedDataChunks.length > this.prevChunksToKeep) {
 					//There are some chunks that are speech
 					//Simply continue adding until we hit counter = next chunks
 					this.savedDataChunks.push(inputData);
 				} else {
-					this.currentSilenceCounter--;
+					this.currentSilenceCounter = 0;
 					this.savedDataChunks.push(inputData);
 					if(this.savedDataChunks.length > this.prevChunksToKeep) {
 						this.savedDataChunks.shift();
@@ -145,15 +144,16 @@ class VAD {
 
 	sendData() {
 		let pcmData = this.convertAudioDataToPCM16();
-		this.socket.emit("vad-result", pcmData);
+		this.rw.Make(pcmData);
+		this.socket.emit("vad-result", this.rw.wav);
 	}
 
 	convertAudioDataToPCM16() {
-		let pcmData = new Int16Array();
+		let pcmData = [];
 		for(let chunk of this.savedDataChunks) {
 			for(let sample of chunk) {
 				let pcm = Math.max(-1, Math.min(1, sample));
-				pcmData.push(s < 0 ? s * 0x8000 : s * 0x7FFF);
+				pcmData.push(pcm < 0 ? pcm * 0x8000 : pcm * 0x7FFF);
 			}
 		}
 		return pcmData;

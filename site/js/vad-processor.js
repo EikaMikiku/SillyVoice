@@ -8,7 +8,7 @@ class VADProcessor extends AudioWorkletProcessor {
 
 	process(inputs, outputs, parameters) {
 		const input = inputs[0];
-		if (input.length > 0) {
+		if(input.length > 0) {
 			const channelData = input[0];
 			for (let i = 0; i < channelData.length; i++) {
 				this.buffer[this.bufferIndex] = channelData[i];
@@ -16,15 +16,20 @@ class VADProcessor extends AudioWorkletProcessor {
 
 				if (this.bufferIndex === this.bufferSize) {
 					this.port.postMessage({
-						type: 'audioData',
+						type: "audioData",
 						audioData: this.buffer
 					});
 					this.bufferIndex = 0;
 				}
 			}
+		} else {
+			//Disconnected?
+			this.port.postMessage({
+				type: "reset"
+			})
 		}
 		return true;
 	}
 }
 
-registerProcessor('vad-processor', VADProcessor);
+registerProcessor("vad-processor", VADProcessor);
