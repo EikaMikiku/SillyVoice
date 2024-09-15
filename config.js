@@ -1,6 +1,8 @@
 module.exports = {
 	Server: {
-		port: 51113
+		port: 51113,
+		audio_log_location: "./data/audio/",
+		autio_log_filename: () => `${Date.now()}_VAD_Voice.wav`
 	},
 	TTS: {
 		edge_tts: {

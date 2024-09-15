@@ -4,3 +4,5 @@ data/cards/*.png
 !data/cards/Vika.png
 data/chats/audio/*.wav
 3rd_party/*
+data/audio/*
+!data/audio/AUDIO_LOG_WAV_FILES

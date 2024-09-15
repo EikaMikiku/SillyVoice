@@ -44,7 +44,8 @@ class Server {
 			});
 
 			socket.on("vad-result", (wavBuffer) => {
-				fs.writeFileSync("./data/wau.wav", Int8Array.from(wavBuffer));
+				let location = `${this.config.audio_log_location}${this.config.autio_log_filename()}`;
+				fs.writeFileSync(location, Int8Array.from(wavBuffer));
 			});
 
 			socket.emit("settings", {
