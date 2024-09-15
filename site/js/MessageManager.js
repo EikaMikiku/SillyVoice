@@ -14,7 +14,7 @@ class MessageManager {
 			if(tempMsg && !msg.isUser) {
 				tempMsg.classList.remove("temp");
 				let span = tempMsg.querySelector("span");
-				span.innerHTML = marked.parse(this.processText(msg.raw));
+				span.innerHTML = this.processText(msg.raw);
 				let roll = tempMsg.querySelector("roll");
 				tempMsg.dataset.idx = msg.idx;
 			} else {
@@ -40,7 +40,7 @@ class MessageManager {
 			} else {
 				let span = tempMsg.querySelector("span");
 				span.original += token;
-				span.innerHTML = marked.parse(this.processText(span.original));
+				span.innerHTML = this.processText(span.original);
 			}
 
 			this.scrollDown();
@@ -62,6 +62,19 @@ class MessageManager {
 				let pens = document.querySelectorAll(".message.user pen");
 				pens[pens.length - 1].click();
 			}
+		});
+
+		this.socket.on("stt-result", (txt) => {
+			let currentText = document.getElementById("chat-input").value;
+			if(currentText.length > 0) {
+				if(currentText.endsWith(".")) {
+					currentText += "\n";
+				} else {
+					currentText += ".\n";
+				}
+			}
+			document.getElementById("chat-input").value = currentText + txt;
+			document.getElementById("chat-input").scrollTop = document.getElementById("chat-input").scrollHeight
 		});
 	}
 
@@ -89,9 +102,8 @@ class MessageManager {
 		msgDiv.appendChild(contentDiv);
 
 		let span = document.createElement("span");
-		txt = this.processText(txt) || "&nbsp;";
 		span.original = txt;
-		span.innerHTML = marked.parse(txt);
+		span.innerHTML = this.processText(txt);
 
 		if(!isUser) {
 			let img = document.createElement("img");
@@ -128,7 +140,7 @@ class MessageManager {
 							span.removeAttribute("contenteditable");
 							document.getElementById("chat-input").focus();
 						} else if(e.key === "Escape") {
-							span.innerHTML = marked.parse(span.original);
+							span.innerHTML = span.original;
 							span.removeAttribute("contenteditable");
 							document.getElementById("chat-input").focus();
 						}
@@ -144,7 +156,13 @@ class MessageManager {
 	}
 
 	processText(txt) {
-		return txt.replace(/"([^"]*)"/g, '<q>$1</q>'); //process quotes
+		if(!txt) {
+			return "&nbsp;";
+		}
+		txt = txt.replace(/"([^"]*)"/g, '<q>$1</q>'); //process quotes
+		txt = txt.replace(/\*([^*]*)\*/g, '<em>$1</em>'); //process asterisks
+		txt = txt.replace(/\n/g, '<br>'); //process new lines
+		return txt;
 	}
 
 	scrollDown() {

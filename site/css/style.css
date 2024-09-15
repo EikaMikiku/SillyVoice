@@ -164,12 +164,6 @@ code {
 	padding: 0px 50px;
 	min-height: 30px;
 }
-.message-content span > p {
-	margin: 2px;
-}
-.message-content span {
-	display: block;
-}
 .message-content pen {
 	position: absolute;
 	right: -100px;
@@ -199,13 +193,14 @@ code {
 	cursor: pointer;
 }
 .message.user .message-content span {
-	margin-right: 2px;
+	display: block;
+	margin: 2px;
 	line-height: 1.7;
 }
 .message-content q {
 	color: orange;
 }
-.message-content p em {
+.message-content em {
 	color: gray;
 }
 .message-content img {

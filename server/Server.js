@@ -46,6 +46,7 @@ class Server {
 			socket.on("vad-result", (wavBuffer) => {
 				let location = `${this.config.audio_log_location}${this.config.autio_log_filename()}`;
 				fs.writeFileSync(location, Int8Array.from(wavBuffer));
+				this.stt.transcribe(location);
 			});
 
 			socket.emit("settings", {
@@ -60,6 +61,11 @@ class Server {
 
 		this.llm.on("llm_genend_web", (msg) => {
 			this.io.emit("llm-genend", msg);
+		});
+
+		this.stt.on("stt_result", (txt) => {
+			log.info("STT", "Result", txt);
+			this.io.emit("stt-result", txt);
 		});
 	}
 }
