@@ -80,7 +80,10 @@ class MessageManager {
 				clearTimeout(this.autoSendTimer);
 				let delay = window.settings.localSettings.autoSendDelay;
 				this.autoSendTimer = setTimeout(() => {
-					this.chatSendEl.click();
+					if(window.VAD.activated && this.chatInputEl.value.length > 0) {
+						//VAD has to be active for auto-send to work.
+						this.chatSendEl.click();
+					}
 				}, delay * 1000);
 			}
 		});

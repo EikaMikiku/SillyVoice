@@ -1,11 +1,12 @@
 const { spawn, spawnSync } = require("child_process");
 const { EdgeTTS } = require("node-edge-tts");
+const Eventful = require("./helpers/Eventful.js");
 
-class TTS {
+class TTS extends Eventful {
 	constructor(config) {
+		super();
 		this.config = config;
 		this.etts = new EdgeTTS(this.config.edge_tts);
-		this.audioPlayer = new AudioPlayer(this.config);
 		this.generating = false;
 		this.queue = [];
 	}
@@ -25,77 +26,26 @@ class TTS {
 
 		this.queue.push(txt);
 		if(!this.generating) {
-			this.speak();
+			this.process();
 		}
 	}
 
-	async speak() {
+	async process() {
 		let txt = this.queue.shift();
 		if(txt) {
 			this.generating = true;
-			let location = `${this.config.output_location}${this.config.output_filename()}`;
+			let location = `${this.config.audio_log_location}${this.config.autio_log_filename()}`;
 			await this.etts.ttsPromise(txt, location);
+			this.notifyEvent("tts_result", location);
 			this.generating = false;
-			log.debug("TTS", "Generation END", txt);
-			this.audioPlayer.addToQueue(location);
-			this.speak(); //try next queue item
+			log.info("TTS", "Generation END", location);
+			this.process(); //try next queue item
 		}
 	}
 
 	#removeEmojis(str) {
 		return str.replace(/[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]/gu, '');
 	}
-}
-
-class AudioPlayer {
-	constructor(config) {
-		this.config = config
-		this.queue = [];
-		this.playing = false;
-	}
-
-	addToQueue(audioPath) {
-		this.queue.push(audioPath);
-		if(!this.playing) {
-			this.startQueue();
-		}
-	}
-
-	startQueue() {
-		let item = this.queue.shift();
-		if(item) {
-			this.playItem(item);
-		}
-	}
-
-	playItem(item) {
-		let ffprobeResult = spawnSync("ffprobe", [
-			"-show_entries", "format=duration",
-			"-hide_banner",
-			"-loglevel", "error",
-			"-i",
-			item
-		]);
-
-		let durStr = ffprobeResult.stdout.toString("utf-8");
-		log.trace("TTS", "ffprobe result", durStr);
-		let duration = parseFloat(durStr.split("\n")[1].trim().split("=")[1]);
-
-		this.playing = true;
-		let ffplay = spawn("ffplay", [
-			...this.config.ffplayArgs,
-			"-ss",
-			this.config.ffplay_time_start_offset,
-			"-t",
-			duration + this.config.ffplay_time_end_offset,
-			item
-		]);
-		ffplay.on("exit", async () => {
-			this.playing = false;
-			this.startQueue();
-		});
-	}
-
 }
 
 module.exports = TTS;

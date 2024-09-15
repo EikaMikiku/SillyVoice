@@ -22,8 +22,8 @@ module.exports = {
 			lang: 'en',
 			rate: "+15%"
 		},
-		output_location: "./data/chats/audio/",
-		output_filename: () => `${Date.now()}_TTS_Voice.wav`,
+		audio_log_location: "./data/audio/",
+		autio_log_filename: () => `${Date.now()}_TTS_Voice.wav`,
 		remove_asterisks: true,
 		remove_emojis: true
 	},
@@ -68,7 +68,7 @@ module.exports = {
 		},
 		context_size: 16384, //overrides samplers too, should match with LLM
 		max_response_length: 512, //overrides samplers too
-		user: "Eika", //Also used as a stopping string
+		user: "Boss", //Also used as a stopping string
 		system_prompt: "You are an expert actor that can fully immerse yourself into any role given. You do not break character for any reason. Only respond as {{char}}. Do not respond as {{user}}.",
 		//Prefix and suffix for system prompt and your inputs
 		prefix: "[INST]", //Also used as a stopping string

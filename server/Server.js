@@ -88,6 +88,15 @@ class Server {
 			log.info("STT", "Result", txt);
 			this.io.emit("stt-result", txt);
 		});
+
+		this.llm.on("llm_sentence", (sentence) => {
+			this.tts.addToQueue(sentence);
+		});
+
+		this.tts.on("tts_result", (filepath) => {
+			let wavContent = fs.readFileSync(filepath);
+			this.io.emit("tts-result", wavContent);
+		});
 	}
 }
 

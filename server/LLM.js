@@ -21,7 +21,6 @@ class LLM extends Eventful {
 		//Add first char message
 		let firstMessage = this.currentChat.generateFirstMessage();
 		this.provider.getTokenCount(firstMessage.formatted, (count) => {
-			log.trace("LLM", "TokenCountFirstMessage", firstMessage, count);
 			this.currentChat.addMessage(firstMessage.formatted, count, false, firstMessage.raw);
 		});
 	}
@@ -64,7 +63,7 @@ class LLM extends Eventful {
 	}
 
 	onEnd() {
-		log.info("LLM", "Generation END", this.currentGeneration);
+		log.info("LLM", "Generation END", this.currentGeneration.trim());
 
 		//Check if last sentence needs to be manually triggered, as not all LLM outputs ends with .?!
 		if(!this.currentGeneration.endsWith(this.currentSentence) || this.currentSentence.length === 0) {
