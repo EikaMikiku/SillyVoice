@@ -30,6 +30,9 @@ class MessageManager {
 
 			if(!msg.isUser) {
 				this.setAvailable();
+			} else {
+				//We just sent our response and got a reply
+				this.chatInputEl.value = "";
 			}
 
 			this.scrollChatDown();
@@ -218,7 +221,7 @@ class MessageManager {
 				currentText += "\n";
 			}
 		}
-		this.chatInputEl.value = currentText + txt;
+		this.chatInputEl.value = currentText + txt.charAt(0).toUpperCase() + txt.substring(1);
 		this.chatInputEl.scrollTop = this.chatInputEl.scrollHeight;
 	}
 }

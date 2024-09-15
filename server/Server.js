@@ -1,7 +1,9 @@
 const http = require("http");
+const https = require("https");
 const express = require("express");
 const SocketIO = require("socket.io");
 const fs = require("fs");
+const path = require("path");
 
 class Server {
 	constructor(config, tts, stt, llm) {
@@ -17,16 +19,35 @@ class Server {
 
 		app.use(express.json());
 		app.use(express.static("./site/", {extensions:["html"]}));
-
-		let server = http.Server(app);
-
 		app.get('/card', (req, res) => {
 			//For security purposes, going to be forcing the path to ./data/cards only
 			let name = req.query.name.split(/[\/\\]/g).pop();
 			res.sendFile(`${name}`, { root: "./data/cards" });
 		});
 
-		server.listen(this.config.port, () => log.info(`HTTP Server running: http://localhost:${this.config.port}/`));
+		let server;
+		if(this.config.https.enabled) {
+			let creds = {};
+			try {
+				creds.key = fs.readFileSync(this.config.https.certs.key, "utf8");
+				creds.cert = fs.readFileSync(this.config.https.certs.cert, "utf8");
+				creds.ca = fs.readFileSync(this.config.https.certs.ca, "utf8");
+			} catch {
+				//Trying to deal with symlinks...
+				let keyPath = fs.readlinkSync(this.config.https.certs.key);
+				let certPath = fs.readlinkSync(this.config.https.certs.cert);
+				let caPath = fs.readlinkSync(this.config.https.certs.ca);
+				creds.key = fs.readFileSync(path.resolve(this.config.https.certs.key, "..", keyPath), "utf8");
+				creds.cert = fs.readFileSync(path.resolve(this.config.https.certs.cert, "..", certPath), "utf8");
+				creds.ca = fs.readFileSync(path.resolve(this.config.https.certs.ca, "..", caPath), "utf8");
+			}
+			server = https.Server(creds, app);
+			server.listen(this.config.port, () => log.info(`HTTPS Server running: https://localhost:${this.config.port}/`));
+		} else {
+			server = http.Server(app);
+			server.listen(this.config.port, () => log.info(`HTTP Server running: http://localhost:${this.config.port}/`));
+		}
+
 		this.io = new SocketIO.Server(server);
 
 		this.io.on("connection", (socket) => {

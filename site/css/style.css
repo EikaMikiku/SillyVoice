@@ -107,6 +107,7 @@ code {
 	justify-content: space-between;
 	user-select: none;
 	-webkit-tap-highlight-color: transparent;
+	font-size: 0.9em;
 }
 .settings * {
 	user-select: none;

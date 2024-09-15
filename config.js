@@ -2,7 +2,15 @@ module.exports = {
 	Server: {
 		port: 51113,
 		audio_log_location: "./data/audio/",
-		autio_log_filename: () => `${Date.now()}_VAD_Voice.wav`
+		autio_log_filename: () => `${Date.now()}_VAD_Voice.wav`,
+		https: {
+			enabled: true,
+			certs: {
+				key: "certs/privkey.pem",
+				cert: "certs/cert.pem",
+				ca: "certs/chain.pem",
+			}
+		}
 	},
 	TTS: {
 		edge_tts: {
