@@ -170,9 +170,9 @@ class MessageManager {
 		if(!txt) {
 			return "&nbsp;";
 		}
-		txt = txt.replace(/"([^"]*)"/g, '<q>$1</q>'); //process quotes
-		txt = txt.replace(/\*([^*]*)\*/g, '<em>$1</em>'); //process asterisks
-		txt = txt.replace(/\n/g, '<br>'); //process new lines
+		txt = txt.replace(/"([^"]*)"/g, "<q>$1</q>"); //process quotes
+		txt = txt.replace(/\*([^*]*)\*/g, "<em>$1</em>"); //process asterisks
+		txt = txt.replace(/\n/g, "<br>"); //process new lines
 		return txt;
 	}
 

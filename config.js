@@ -10,6 +10,11 @@ module.exports = {
 				cert: "certs/cert.pem",
 				ca: "certs/chain.pem",
 			}
+		},
+		basic_auth: {
+			enabled: true,
+			username: "admin",
+			password: "miku"
 		}
 	},
 	TTS: {
@@ -19,7 +24,7 @@ module.exports = {
 			voice: "en-US-AvaNeural",
 			//voice: "fr-FR-VivienneMultilingualNeural",
 
-			lang: 'en',
+			lang: "en",
 			rate: "+15%"
 		},
 		audio_log_location: "./data/audio/",

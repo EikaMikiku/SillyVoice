@@ -18,8 +18,13 @@ class Server {
 		let app = express();
 
 		app.use(express.json());
+
+		if(this.config.basic_auth.enabled) {
+			app.use((req, res, cb) => this.basicAuthHandler(req, res, cb));
+		}
+
 		app.use(express.static("./site/", {extensions:["html"]}));
-		app.get('/card', (req, res) => {
+		app.get("/card", (req, res) => {
 			//For security purposes, going to be forcing the path to ./data/cards only
 			let name = req.query.name.split(/[\/\\]/g).pop();
 			res.sendFile(`${name}`, { root: "./data/cards" });
@@ -97,6 +102,33 @@ class Server {
 			let wavContent = fs.readFileSync(filepath);
 			this.io.emit("tts-result", wavContent);
 		});
+	}
+
+	unauthorisedResponse(res) {
+		res.set("WWW-Authenticate", "Basic realm=\"SillyVoice\", charset=\"UTF-8\"");
+		return res.status(401).send("Authentication required");
+	}
+
+	basicAuthHandler(req, res, cb) {
+		let authHeader = req.headers.authorization;
+
+		if (!authHeader) {
+			return this.unauthorisedResponse(res);
+		}
+
+		let [scheme, credentials] = authHeader.split(" ");
+
+		if (scheme !== "Basic" || !credentials) {
+			return this.unauthorisedResponse(res);
+		}
+
+		let [username, password] = Buffer.from(credentials, "base64").toString("utf8").split(":");
+
+		if (username === this.config.basic_auth.username && password === this.config.basic_auth.password) {
+			return cb();
+		} else {
+			return this.unauthorisedResponse(res);
+		}
 	}
 }
 

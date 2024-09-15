@@ -44,7 +44,7 @@ class TTS extends Eventful {
 	}
 
 	#removeEmojis(str) {
-		return str.replace(/[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]/gu, '');
+		return str.replace(/[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]/gu, "");
 	}
 }
 
