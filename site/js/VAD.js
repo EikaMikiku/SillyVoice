@@ -22,11 +22,13 @@ class VAD {
 		this.speechDetected = false;
 		this.speechThreshold = 0.75;
 
+		this.vadStartEl = document.getElementById("vad-start");
+
 		this.bindEvents();
 	}
 
 	bindEvents() {
-		document.getElementById("vad-start").addEventListener("click", () => {
+		this.vadStartEl.addEventListener("click", () => {
 			if(this.activated) {
 				this.deactivate();
 			} else {
@@ -38,9 +40,9 @@ class VAD {
 	async activate() {
 		if(this.audioContext) {
 			await this.audioContext.resume();
-			document.getElementById("vad-start").innerText = "⏹";
+			this.vadStartEl.innerText = "⏹";
 			this.activated = true;
-			document.getElementById("vad-start").classList.add("activated");
+			this.vadStartEl.classList.add("activated");
 		} else {
 			try {
 				await this.initSession();
@@ -75,9 +77,9 @@ class VAD {
 				this.mediaSource = this.audioContext.createMediaStreamSource(this.mediaStream);
 				this.mediaSource.connect(this.workletNode);
 
-				document.getElementById("vad-start").innerText = "⏹";
+				this.vadStartEl.innerText = "⏹";
 				this.activated = true;
-				document.getElementById("vad-start").classList.add("activated");
+				this.vadStartEl.classList.add("activated");
 			} catch(e) {
 				alert("Error accessing microphone:\n" + e);
 				console.error("Error accessing microphone:", e);
@@ -90,16 +92,12 @@ class VAD {
 		if(this.audioContext) {
 			await this.audioContext.suspend();
 		}
-		document.getElementById("vad-start").innerText = "🎤";
-		document.getElementById("vad-start").classList.remove("activated");
+		this.vadStartEl.innerText = "🎤";
+		this.vadStartEl.classList.remove("activated");
 		this.activated = false;
 	}
 
 	async processAudioData(inputData) {
-		//Converting data to PCM16 for converting to WAV later on
-		//let pcmData = convertToPCM16(inputData);
-		//this.savedDataChunks.push(inputData);
-
 		let result = await this.vadSession.run({
 			"input": new ort.Tensor("float32", inputData, [1, inputData.length]),
 			"h": new ort.Tensor("float32", this.sessionParamH, [2, 1, 64]),

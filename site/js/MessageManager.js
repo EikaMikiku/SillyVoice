@@ -2,13 +2,19 @@ class MessageManager {
 	constructor(socket) {
 		this.socket = socket;
 
+		this.chatInputEl = document.getElementById("chat-input");
+		this.chatSendEl = document.getElementById("chat-send");
+		this.msgContainerEl = document.getElementById("messages-container");
+
+		this.autoSendTimer;
+
 		this.bindEvents();
 	}
 
 	bindEvents() {
 		this.socket.on("llm-genend", (msg) => {
 			this.clearMsgsWithBiggerIdx(msg.idx); //Remove existing msgs with that idx or later
-			let messagesContainer = document.getElementById("messages-container");
+			let messagesContainer = this.msgContainerEl;
 
 			let tempMsg = messagesContainer.querySelector(".temp");
 			if(tempMsg && !msg.isUser) {
@@ -26,11 +32,11 @@ class MessageManager {
 				this.setAvailable();
 			}
 
-			this.scrollDown();
+			this.scrollChatDown();
 		});
 
 		this.socket.on("llm-token", (token) => {
-			let messagesContainer = document.getElementById("messages-container");
+			let messagesContainer = this.msgContainerEl;
 			let tempMsg = messagesContainer.querySelector(".temp");
 
 			if(!tempMsg) {
@@ -43,20 +49,19 @@ class MessageManager {
 				span.innerHTML = this.processText(span.original);
 			}
 
-			this.scrollDown();
+			this.scrollChatDown();
 		});
 
-		document.getElementById("chat-send").addEventListener("click", (e) => {
+		this.chatSendEl.addEventListener("click", (e) => {
 			this.setWaiting();
-			let chatInputEl = document.getElementById("chat-input");
-			this.socket.emit("chat-input", chatInputEl.value);
-			chatInputEl.value = "";
+			this.socket.emit("chat-input", this.chatInputEl.value);
+			this.chatInputEl.value = "";
 		});
 
-		document.getElementById("chat-input").addEventListener("keydown", (e) => {
+		this.chatInputEl.addEventListener("keydown", (e) => {
 			if(e.key === "Enter" && !e.shiftKey) {
 				e.preventDefault();
-				document.getElementById("chat-send").click();
+				this.chatSendEl.click();
 			} else if(e.key === "ArrowUp") {
 				//get last user msg and edit it
 				let pens = document.querySelectorAll(".message.user pen");
@@ -65,21 +70,21 @@ class MessageManager {
 		});
 
 		this.socket.on("stt-result", (txt) => {
-			let currentText = document.getElementById("chat-input").value;
-			if(currentText.length > 0) {
-				if(currentText.endsWith(".")) {
-					currentText += "\n";
-				} else {
-					currentText += ".\n";
-				}
+			this.appendVoiceText(txt);
+
+			//Auto send delay timer logic
+			if(window.settings.localSettings.autoSend) {
+				clearTimeout(this.autoSendTimer);
+				let delay = window.settings.localSettings.autoSendDelay;
+				this.autoSendTimer = setTimeout(() => {
+					this.chatSendEl.click();
+				}, delay * 1000);
 			}
-			document.getElementById("chat-input").value = currentText + txt;
-			document.getElementById("chat-input").scrollTop = document.getElementById("chat-input").scrollHeight
 		});
 	}
 
 	initChatLog(messages) {
-		let messagesContainer = document.getElementById("messages-container");
+		let messagesContainer = this.msgContainerEl;
 		while(messagesContainer.firstElementChild) {
 			messagesContainer.removeChild(messagesContainer.firstElementChild);
 		}
@@ -89,7 +94,7 @@ class MessageManager {
 			messagesContainer.appendChild(msgEl);
 		}
 
-		this.scrollDown();
+		this.scrollChatDown();
 	}
 
 	createMessageElement(idx, txt, isUser) {
@@ -138,11 +143,11 @@ class MessageManager {
 							e.preventDefault();
 							this.socket.emit("edit-msg", idx, span.innerText);
 							span.removeAttribute("contenteditable");
-							document.getElementById("chat-input").focus();
+							this.chatInputEl.focus();
 						} else if(e.key === "Escape") {
 							span.innerHTML = span.original;
 							span.removeAttribute("contenteditable");
-							document.getElementById("chat-input").focus();
+							this.chatInputEl.focus();
 						}
 					}
 				};
@@ -165,8 +170,8 @@ class MessageManager {
 		return txt;
 	}
 
-	scrollDown() {
-		let messagesContainer = document.getElementById("messages-container");
+	scrollChatDown() {
+		let messagesContainer = this.msgContainerEl;
 		messagesContainer.scrollTo({
 			top: messagesContainer.scrollHeight,
 			behaviour: "smooth"
@@ -174,7 +179,7 @@ class MessageManager {
 	}
 
 	setWaiting() {
-		document.getElementById("chat-send").disabled = true;
+		this.chatSendEl.disabled = true;
 		let rollBtns = document.querySelectorAll(".message-content roll");
 		for(let btn of rollBtns) {
 			btn.setAttribute("disabled", "");
@@ -182,7 +187,7 @@ class MessageManager {
 	}
 
 	setAvailable() {
-		document.getElementById("chat-send").disabled = false;
+		this.chatSendEl.disabled = false;
 		let rollBtns = document.querySelectorAll(".message-content roll");
 		for(let btn of rollBtns) {
 			btn.removeAttribute("disabled");
@@ -202,5 +207,18 @@ class MessageManager {
 				msg.parentElement.removeChild(msg);
 			}
 		}
+	}
+
+	appendVoiceText(txt) {
+		let currentText = this.chatInputEl.value.trim();
+		if(currentText.length > 0) {
+			if(currentText.match(/[\w\d]$/)) { //Ends with a letter or a digit
+				currentText += ".\n";
+			} else {
+				currentText += "\n";
+			}
+		}
+		this.chatInputEl.value = currentText + txt;
+		this.chatInputEl.scrollTop = this.chatInputEl.scrollHeight;
 	}
 }

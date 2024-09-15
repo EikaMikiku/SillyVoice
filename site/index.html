@@ -16,10 +16,10 @@
 
 <body>
 	<div class="settings" style="margin-top:5px">
-		<label>Use voice:
+		<label>Voice Auto-Send:
 			<div>
-				<div class="toggle-button" for="toggler">
-					<input type="checkbox" class="checkbox" id="toggler">
+				<div class="toggle-button" for="auto-send-toggle">
+					<input type="checkbox" class="checkbox" id="auto-send-toggle">
 					<div class="knobs"></div>
 					<div class="layer"></div>
 				</div>
@@ -36,13 +36,9 @@
 		</label>
 	</div>
 	<div class="settings" style="margin-top:70px">
-		<label>Setting #3:
+		<label>Auto-Send Delay (s):
 			<div>
-				<div class="toggle-button" for="toggler">
-					<input type="checkbox" class="checkbox" id="toggler">
-					<div class="knobs"></div>
-					<div class="layer"></div>
-				</div>
+				<input id="auto-send-delay" type="number" value="0" min="0" max="99">
 			</div>
 		</label>
 		<label>Setting #4:
@@ -95,7 +91,7 @@
 			-->
 		</div>
 		<div class="inputs">
-			<textarea id="chat-input" rows="3" placeholder="Your message here..."></textarea>
+			<textarea id="chat-input" rows="4" placeholder="Your message here..."></textarea>
 			<button id="chat-send">Send</button>
 			<button id="vad-start">🎤</button>
 		</div>
