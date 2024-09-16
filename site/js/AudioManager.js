@@ -13,7 +13,6 @@ class AudioManager {
 
 	bindEvents() {
 		this.socket.on("tts-result", (buffer) => {
-			console.log(buffer);
 			let blob = new Blob([buffer], { type: "audio/wav" });
 			this.addToQueue(URL.createObjectURL(blob));
 		});
@@ -50,6 +49,7 @@ class AudioManager {
 			URL.revokeObjectURL(audioURL);
 			this.startQueue();
 		});
+		audio.volume = (window.settings.localSettings.volume || 100) / 100;
 		audio.play();
 		this.playing = true;
 		this.charBorderUpdate();

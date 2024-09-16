@@ -6,15 +6,22 @@ class Settings {
 		this.avatarImgEl = document.getElementById("avatar-img");
 		this.autoSendToggleEl = document.getElementById("auto-send-toggle");
 		this.autoSendDelayEl = document.getElementById("auto-send-delay");
+		this.volumeEl = document.getElementById("volume");
+
+		this.defaultSettings = {
+			autoSend: false,
+			autoSendDelay: 0,
+			volume: 80
+		}
 
 		if(window.localStorage["localSettings"]) {
 			this.localSettings = JSON.parse(window.localStorage["localSettings"]);
+			this.localSettings.autoSend = this.localSettings.autoSend || this.defaultSettings.autoSend;
+			this.localSettings.autoSendDelay = this.localSettings.autoSendDelay || this.defaultSettings.autoSendDelay;
+			this.localSettings.volume = this.localSettings.volume || this.defaultSettings.volume;
 			this.loadLocalSettings();
 		} else {
-			this.localSettings = {
-				autoSend: false,
-				autoSendDelay: 0
-			};
+			this.localSettings = this.defaultSettings;
 		}
 
 		this.bindEvents();
@@ -37,6 +44,11 @@ class Settings {
 			this.localSettings.autoSendDelay = parseInt(e.target.value);
 			this.updateLocalSettings();
 		});
+
+		this.volumeEl.addEventListener("change", (e) => {
+			this.localSettings.volume = parseInt(e.target.value);
+			this.updateLocalSettings();
+		});
 	}
 
 	updateLocalSettings() {
@@ -44,7 +56,8 @@ class Settings {
 	}
 
 	loadLocalSettings() {
-		this.autoSendToggleEl.checked = this.localSettings.autoSend;
-		this.autoSendDelayEl.value = parseInt(this.localSettings.autoSendDelay);
+		this.autoSendToggleEl.checked = this.localSettings.autoSend || false;
+		this.autoSendDelayEl.value = parseInt(this.localSettings.autoSendDelay) || 0;
+		this.volumeEl.value = parseInt(this.localSettings.volume) || 80;
 	}
 }

@@ -131,8 +131,12 @@ class KoboldCPP extends Eventful {
 			koboldSamplers[forceSampler.prop] = forceSampler.value;
 		}
 
-		koboldSamplers.stop.push(`\n${this.config.user}:`);
-		koboldSamplers.stop.push(`\n${this.config.prefix}`);
+		if(!koboldSamplers.stop.includes(`\n${this.config.user}:`)) {
+			koboldSamplers.stop.push(`\n${this.config.user}:`);
+		}
+		if(!koboldSamplers.stop.includes(`\n${this.config.prefix}`)) {
+			koboldSamplers.stop.push(`\n${this.config.prefix}`);
+		}
 
 		if(this.config.max_response_length) {
 			koboldSamplers.max_length = this.config.max_response_length;
