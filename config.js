@@ -57,7 +57,7 @@ module.exports = {
 			},
 			{
 				//custom stopping strings
-				prop: "stop",
+				prop: "stop_sequence",
 				value: [
 					"***",
 					"###"
@@ -77,7 +77,7 @@ module.exports = {
 		system_prompt: "You are an expert actor that can fully immerse yourself into any role given. You do not break character for any reason. Only respond as {{char}}. Do not respond as {{user}}.",
 		//Prefix and suffix for system prompt and your inputs
 		prefix: "[INST] ", //Also used as a stopping string
-		suffix: "[/INST]",
+		suffix: " [/INST]",
 		card: "./data/cards/Vika.png"
 	},
 	Logger: {

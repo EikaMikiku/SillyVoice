@@ -109,7 +109,7 @@ class KoboldCPP extends Eventful {
 		koboldSamplers.frequency_penalty = stSamplersJson.freq_pen;
 		koboldSamplers.presence_penalty = stSamplersJson.presence_pen;
 		koboldSamplers.top_k = stSamplersJson.top_k;
-		koboldSamplers.stop = []; //Use force_custom_samplers config to set this one
+		koboldSamplers.stop_sequence = []; //Use force_custom_samplers config to set this one
 		koboldSamplers.max_context_length = stSamplersJson.max_length;
 		koboldSamplers.top_a = stSamplersJson.top_a;
 		koboldSamplers.tfs = stSamplersJson.tfs;
@@ -131,11 +131,11 @@ class KoboldCPP extends Eventful {
 			koboldSamplers[forceSampler.prop] = forceSampler.value;
 		}
 
-		if(!koboldSamplers.stop.includes(`\n${this.config.user}:`)) {
-			koboldSamplers.stop.push(`\n${this.config.user}:`);
+		if(!koboldSamplers.stop_sequence.includes(`\n${this.config.user}:`)) {
+			koboldSamplers.stop_sequence.push(`\n${this.config.user}:`);
 		}
-		if(!koboldSamplers.stop.includes(`\n${this.config.prefix}`)) {
-			koboldSamplers.stop.push(`\n${this.config.prefix}`);
+		if(!koboldSamplers.stop_sequence.includes(`\n${this.config.prefix}`)) {
+			koboldSamplers.stop_sequence.push(`\n${this.config.prefix}`);
 		}
 
 		if(this.config.max_response_length) {
