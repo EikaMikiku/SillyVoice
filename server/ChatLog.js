@@ -22,7 +22,7 @@ class ChatLog {
 		let str = this.config.prefix;
 
 		//System prompt
-		str += ` ${this.config.system_prompt}\n`
+		str += `${this.config.system_prompt}\n`
 
 		//Character description
 		str += `${meta.description} `;
@@ -49,7 +49,7 @@ class ChatLog {
 	}
 
 	generateUserMessage(prompt) {
-		let str = `\n${this.config.prefix} {{user}}: ${prompt} ${this.config.suffix}`;
+		let str = `\n${this.config.prefix}{{user}}: ${prompt} ${this.config.suffix}`;
 		str += `\n{{char}}:`;
 
 		str = str.replaceAll("{{char}}", this.card.metadata.name);
