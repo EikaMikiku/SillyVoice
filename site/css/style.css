@@ -233,8 +233,12 @@ code {
 	font-weight: bold;
 	cursor: pointer;
 	margin-left: 10px;
-	width: 5vw;
-	min-width: 100px;
+	width: 4vw;
+	min-width: 80px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
 }
 #vad-start {
 	background: transparent;
@@ -244,8 +248,8 @@ code {
 	font-weight: bold;
 	cursor: pointer;
 	margin-left: 10px;
-	width: 5vw;
-	min-width: 100px;
+	width: 4vw;
+	min-width: 80px;
 	font-size: 2.5em;
 	line-height: 1;
 	padding-top: 4px;
@@ -269,4 +273,19 @@ code {
 	font-size: 2em;
 	font-weight: bold;
 	color: dimgray;
+}
+#auto-send-progress {
+	--duration: 0s;
+	width: 0%;
+	height: 0%;
+	background: #222;
+	justify-content: center;
+	align-items: center;
+	align-self: center;
+	position: absolute;
+	z-index: -1;
+	border-radius: 100%;
+}
+.auto-send-transition {
+	transition: width linear var(--duration), height linear var(--duration);
 }

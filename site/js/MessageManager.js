@@ -5,6 +5,7 @@ class MessageManager {
 		this.chatInputEl = document.getElementById("chat-input");
 		this.chatSendEl = document.getElementById("chat-send");
 		this.msgContainerEl = document.getElementById("messages-container");
+		this.autoSendProgress = document.getElementById("auto-send-progress");
 
 		this.autoSendTimer;
 
@@ -74,19 +75,46 @@ class MessageManager {
 
 		this.socket.on("stt-result", (txt) => {
 			this.appendVoiceText(txt);
-
-			//Auto send delay timer logic
-			if(window.settings.localSettings.autoSend) {
-				clearTimeout(this.autoSendTimer);
-				let delay = window.settings.localSettings.autoSendDelay;
-				this.autoSendTimer = setTimeout(() => {
-					if(window.settings.localSettings.autoSend && window.VAD.activated && this.chatInputEl.value.length > 0) {
-						//VAD has to be active for auto-send to work.
-						this.chatSendEl.click();
-					}
-				}, delay * 1000);
-			}
+			this.autoSendInit();
 		});
+	}
+
+	autoSendInit() {
+		//Auto send delay timer logic
+		if(window.settings.localSettings.autoSend) {
+			clearTimeout(this.autoSendTimer);
+			this.updateAutoSendProgress(-1);
+			let delay = window.settings.localSettings.autoSendDelay;
+			this.autoSendTimer = setTimeout(() => {
+				this.onAutoSendComplete();
+			}, delay * 1000);
+			setTimeout(() => {
+				//Next tick force, so we can terminate transition first and restart it here
+				this.updateAutoSendProgress(delay);
+			});
+		}
+	}
+
+	onAutoSendComplete() {
+		this.updateAutoSendProgress(-1);
+		if(window.settings.localSettings.autoSend && window.VAD.activated && this.chatInputEl.value.length > 0) {
+			//VAD has to be active for auto-send to work.
+			this.chatSendEl.click();
+		}
+	}
+
+	updateAutoSendProgress(delay) {
+		if(delay === -1) {
+			this.autoSendProgress.style.setProperty("--duration", "0s");
+			this.autoSendProgress.style.width = "0%";
+			this.autoSendProgress.style.height = "0%";
+			this.autoSendProgress.classList.remove("auto-send-transition");
+		} else {
+			this.autoSendProgress.classList.add("auto-send-transition");
+			this.autoSendProgress.style.setProperty("--duration", delay+"s");
+			this.autoSendProgress.style.width = "100%";
+			this.autoSendProgress.style.height = "100%";
+		}
 	}
 
 	initChatLog(messages) {
