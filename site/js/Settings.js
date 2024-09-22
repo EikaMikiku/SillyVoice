@@ -32,6 +32,7 @@ class Settings {
 			console.log("Settings", settings);
 			this.settings = settings;
 			this.avatarImgEl.style.setProperty("--background", `url("/card/?name=${settings.card}")`);
+			document.getElementById("char-name").innerText = settings.cardMetadata.name;
 			window.messageManager.initChatLog(settings.currentChat);
 		});
 

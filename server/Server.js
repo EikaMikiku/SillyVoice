@@ -76,6 +76,7 @@ class Server {
 			});
 
 			socket.emit("settings", {
+				cardMetadata: this.llm.card.metadata,
 				card: this.llm.config.card,
 				currentChat: this.llm.currentChat.messages
 			});
