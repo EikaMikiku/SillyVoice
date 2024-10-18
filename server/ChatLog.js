@@ -19,14 +19,13 @@ class ChatLog {
 
 	generatePermanentPrompt() {
 		let meta = this.card.metadata;
-		let str = this.config.prefix;
+		let str = "";
 
 		//System prompt
-		str += `${this.config.system_prompt}\n`
+		str += `${this.config.system_prefix}${this.config.system_prompt}\n`
 
 		//Character description
-		str += `${meta.description}`;
-		str += this.config.suffix;
+		str += `${meta.description}${this.config.system_suffix}`;
 
 		//Templating replacements
 		str = str.replaceAll("{{char}}", meta.name);
@@ -43,14 +42,14 @@ class ChatLog {
 		raw = raw.replaceAll("{{user}}", this.config.user);
 
 		return {
-			formatted: `${meta.name}: ${raw}`,
+			formatted: `${this.config.char_prefix}\n${meta.name}: ${raw}`, //No suffix, user gen message func adds char suffix first.
 			raw: raw.trim()
 		};
 	}
 
 	generateUserMessage(prompt) {
-		let str = `\n${this.config.prefix}{{user}}: ${prompt}${this.config.suffix}`;
-		str += `\n{{char}}:`;
+		let str = `${this.config.char_suffix}\n${this.config.user_prefix}{{user}}: ${prompt}${this.config.user_suffix}`;
+		str += `${this.config.char_prefix}\n{{char}}:`;
 
 		str = str.replaceAll("{{char}}", this.card.metadata.name);
 		str = str.replaceAll("{{user}}", this.config.user);

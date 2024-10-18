@@ -60,6 +60,9 @@ class MessageManager {
 			this.setWaiting();
 			this.socket.emit("chat-input", this.chatInputEl.value);
 			this.chatInputEl.value = "";
+			setTimeout(() => {
+				this.updateAutoSendProgress(-1);
+			});
 		});
 
 		this.chatInputEl.addEventListener("keydown", (e) => {

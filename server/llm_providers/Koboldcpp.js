@@ -134,8 +134,18 @@ class KoboldCPP extends Eventful {
 		if(!koboldSamplers.stop_sequence.includes(`\n${this.config.user}:`)) {
 			koboldSamplers.stop_sequence.push(`\n${this.config.user}:`);
 		}
-		if(!koboldSamplers.stop_sequence.includes(`\n${this.config.prefix}`)) {
-			koboldSamplers.stop_sequence.push(`\n${this.config.prefix}`);
+
+		if(!koboldSamplers.stop_sequence.includes(`${this.config.user_prefix}`)) {
+			koboldSamplers.stop_sequence.push(`${this.config.user_prefix}`);
+		}
+		if(!koboldSamplers.stop_sequence.includes(`${this.config.user_suffix}`)) {
+			koboldSamplers.stop_sequence.push(`${this.config.user_suffix}`);
+		}
+		if(!koboldSamplers.stop_sequence.includes(`${this.config.char_prefix}`)) {
+			koboldSamplers.stop_sequence.push(`${this.config.char_prefix}`);
+		}
+		if(!koboldSamplers.stop_sequence.includes(`${this.config.char_suffix}`)) {
+			koboldSamplers.stop_sequence.push(`${this.config.char_suffix}`);
 		}
 
 		if(this.config.max_response_length) {

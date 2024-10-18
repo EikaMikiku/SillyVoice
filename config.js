@@ -25,7 +25,7 @@ module.exports = {
 			//voice: "fr-FR-VivienneMultilingualNeural",
 
 			lang: "en",
-			rate: "+15%"
+			rate: "+10%"
 		},
 		audio_log_location: "./data/audio/",
 		autio_log_filename: () => `${Date.now()}_TTS_Voice.wav`,
@@ -74,10 +74,14 @@ module.exports = {
 		context_size: 16384, //overrides samplers too, should match with LLM
 		max_response_length: 512, //overrides samplers too
 		user: "Boss", //Also used as a stopping string
-		system_prompt: "You are an expert actor that can fully immerse yourself into any role given. You do not break character for any reason. Only respond as {{char}}. Do not respond as {{user}}.",
+		system_prompt: "You are {{char}}! Engage with {{user}} in a manner that is true to {{char}}'s personality. You do not break character for any reason. Incorporate character-specific mannerisms and quirks to make the experience more authentic. Draw from {{char}}'s profile and stored knowledge for specific details about {{char}}'s appearance, style, diction, syntax, and backstory. Only respond as {{char}}.",
 		//Prefix and suffix for system prompt and your inputs
-		prefix: "[INST] ", //Also used as a stopping string
-		suffix: " [/INST]",
+		system_prefix: "<|im_start|>system\n",
+		system_suffix: "<|im_end|>",
+		user_prefix: "<|im_start|>",
+		user_suffix: "<|im_end|>",
+		char_prefix: "<|im_start|>",
+		char_suffix: "<|im_end|>",
 		card: "./data/cards/Vika.png"
 	},
 	Logger: {
