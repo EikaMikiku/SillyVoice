@@ -21,8 +21,12 @@ module.exports = {
 		edge_tts: {
 			//https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=tts
 			//Some voices dont work :(
-			voice: "en-US-AvaNeural",
-			//voice: "fr-FR-VivienneMultilingualNeural",
+
+			voice: "en-IE-EmilyNeural", //Smooth voice.
+			//voice: "ka-GE-EkaNeural", //Cold voice
+			//voice: "en-US-AvaNeural", //Most expressive
+			//voice: "zh-CN-XiaoyiNeural", //China!
+			//voice: "en-US-AvaNeural",
 
 			lang: "en",
 			rate: "+10%"
@@ -59,14 +63,18 @@ module.exports = {
 				//custom stopping strings
 				prop: "stop_sequence",
 				value: [
-					"***",
-					"###"
 				]
 			},
 			{
 				prop: "temperature",
 				value: 0.4
 			},
+			/*
+			{
+				prop: "seed",
+				value: 123
+			}
+			*/
 		],
 		sentence_split: {
 			min_word_count: 4
@@ -76,13 +84,25 @@ module.exports = {
 		user: "Boss", //Also used as a stopping string
 		system_prompt: "You are {{char}}! Engage with {{user}} in a manner that is true to {{char}}'s personality. You do not break character for any reason. Incorporate character-specific mannerisms and quirks to make the experience more authentic. Draw from {{char}}'s profile and stored knowledge for specific details about {{char}}'s appearance, style, diction, syntax, and backstory. Only respond as {{char}}.",
 		//Prefix and suffix for system prompt and your inputs
+
+		/* ChatML
 		system_prefix: "<|im_start|>system\n",
 		system_suffix: "<|im_end|>",
 		user_prefix: "<|im_start|>",
 		user_suffix: "<|im_end|>",
 		char_prefix: "<|im_start|>",
 		char_suffix: "<|im_end|>",
-		card: "./data/cards/Vika.png"
+		//*/
+
+		//* Mistral
+		system_prefix: "[INST] ",
+		system_suffix: " [/INST]",
+		user_prefix: "[INST] ",
+		user_suffix: " [/INST]",
+		char_prefix: "",
+		char_suffix: "",
+		//*/
+
 	},
 	Logger: {
 		show_level: "trace"

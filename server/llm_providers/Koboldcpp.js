@@ -104,6 +104,7 @@ class KoboldCPP extends Eventful {
 		koboldSamplers.typical_p = stSamplersJson.typical_p;
 		koboldSamplers.seed = stSamplersJson.seed || -1;
 		koboldSamplers.sampler_seed = stSamplersJson.seed || -1;
+		koboldSamplers.trim_stop = stSamplersJson.trim_stop;
 		koboldSamplers.min_p = stSamplersJson.min_p;
 		koboldSamplers.rep_pen = stSamplersJson.rep_pen;
 		koboldSamplers.frequency_penalty = stSamplersJson.freq_pen;
@@ -134,19 +135,26 @@ class KoboldCPP extends Eventful {
 		if(!koboldSamplers.stop_sequence.includes(`\n${this.config.user}:`)) {
 			koboldSamplers.stop_sequence.push(`\n${this.config.user}:`);
 		}
+		if(!koboldSamplers.stop_sequence.includes(`\n ${this.config.user}:`)) {
+			koboldSamplers.stop_sequence.push(`\n ${this.config.user}:`);
+		}
 
-		if(!koboldSamplers.stop_sequence.includes(`${this.config.user_prefix}`)) {
+		if(this.config.user_prefix && !koboldSamplers.stop_sequence.includes(`${this.config.user_prefix}`)) {
 			koboldSamplers.stop_sequence.push(`${this.config.user_prefix}`);
 		}
-		if(!koboldSamplers.stop_sequence.includes(`${this.config.user_suffix}`)) {
+		if(this.config.user_suffix && !koboldSamplers.stop_sequence.includes(`${this.config.user_suffix}`)) {
 			koboldSamplers.stop_sequence.push(`${this.config.user_suffix}`);
 		}
-		if(!koboldSamplers.stop_sequence.includes(`${this.config.char_prefix}`)) {
+		if(this.config.char_prefix && !koboldSamplers.stop_sequence.includes(`${this.config.char_prefix}`)) {
 			koboldSamplers.stop_sequence.push(`${this.config.char_prefix}`);
 		}
-		if(!koboldSamplers.stop_sequence.includes(`${this.config.char_suffix}`)) {
+		if(this.config.char_suffix && !koboldSamplers.stop_sequence.includes(`${this.config.char_suffix}`)) {
 			koboldSamplers.stop_sequence.push(`${this.config.char_suffix}`);
 		}
+
+		//Some aliases
+		koboldSamplers.stop = koboldSamplers.stop_sequence;
+		koboldSamplers.stopping_strings = koboldSamplers.stop_sequence;
 
 		if(this.config.max_response_length) {
 			koboldSamplers.max_length = this.config.max_response_length;
