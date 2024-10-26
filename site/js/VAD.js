@@ -111,6 +111,7 @@ class VAD {
 			this.speechDetected = true;
 			this.savedDataChunks.push(inputData);
 			this.currentSilenceCounter = 0;
+			window.messageManager.autoSendReset();
 		} else {
 			this.currentSilenceCounter++;
 			if(this.currentSilenceCounter === this.nextChunksToKeep && this.savedDataChunks.length > this.prevChunksToKeep) {

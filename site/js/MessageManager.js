@@ -107,6 +107,11 @@ class MessageManager {
 		}
 	}
 
+	autoSendReset() {
+		clearTimeout(this.autoSendTimer); //To not run autoSendComplete
+		this.autoSendInit();
+	}
+
 	onAutoSendComplete() {
 		this.updateAutoSendProgress(-1);
 		if(window.settings.localSettings.autoSend && window.VAD.activated && this.chatInputEl.value.length > 0) {
@@ -153,8 +158,8 @@ class MessageManager {
 		msgDiv.appendChild(contentDiv);
 
 		let span = document.createElement("span");
-		span.original = txt;
 		span.innerHTML = this.processText(txt);
+		span.original = span.innerHTML;
 
 		if(!isUser) {
 			let img = document.createElement("img");
