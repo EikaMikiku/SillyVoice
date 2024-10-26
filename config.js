@@ -22,11 +22,11 @@ module.exports = {
 			//https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=tts
 			//Some voices dont work :(
 
-			voice: "en-IE-EmilyNeural", //Smooth voice.
+			//voice: "en-IE-EmilyNeural", //Smooth voice.
 			//voice: "ka-GE-EkaNeural", //Cold voice
 			//voice: "en-US-AvaNeural", //Most expressive
 			//voice: "zh-CN-XiaoyiNeural", //China!
-			//voice: "en-US-AvaNeural",
+			voice: "en-US-AvaNeural",
 
 			lang: "en",
 			rate: "+10%"
@@ -103,6 +103,7 @@ module.exports = {
 		char_suffix: "",
 		//*/
 
+		card: "./data/cards/Vika.png"
 	},
 	Logger: {
 		show_level: "trace"

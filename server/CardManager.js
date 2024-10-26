@@ -29,7 +29,8 @@ class CardManager {
 		}
 
 		let str = Buffer.from(textChunks[index].text, "base64").toString("utf8");
-		return JSON.parse(str);
+		let metadata = JSON.parse(str);
+		return metadata.data || metadata;
 	}
 }
 

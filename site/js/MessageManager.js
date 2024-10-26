@@ -71,8 +71,17 @@ class MessageManager {
 				this.chatSendEl.click();
 			} else if(e.key === "ArrowUp") {
 				//get last user msg and edit it
-				let pens = document.querySelectorAll(".message.user pen");
-				pens[pens.length - 1].click();
+				let newLineAt = this.chatInputEl.value.indexOf("\n");
+				if(newLineAt === -1 || (this.chatInputEl.selectionStart <= newLineAt)) {
+					let pens = document.querySelectorAll(".message.user pen");
+					pens[pens.length - 1].click();
+				}
+			} else if(e.key === "ArrowRight") {
+				if(this.chatInputEl.value === "" && !this.chatSendEl.disabled) {
+					//get last message and reroll it
+					let rolls = this.msgContainerEl.querySelectorAll(".message roll");
+					rolls[rolls.length - 1].click();
+				}
 			}
 		});
 
