@@ -15,7 +15,9 @@ module.exports = {
 			enabled: true,
 			username: "admin",
 			password: "miku"
-		}
+		},
+		activation_words: ["Hey"],
+		remove_activation_word: true,
 	},
 	TTS: {
 		edge_tts: {
@@ -34,7 +36,12 @@ module.exports = {
 		audio_log_location: "./data/audio/",
 		autio_log_filename: () => `${Date.now()}_TTS_Voice.wav`,
 		remove_asterisks: true,
-		remove_emojis: true
+		remove_emojis: true,
+		pronunciation_replacements: {
+			//Should be tailored for a specific voice you plan on using.
+			//Can test using some online WebAPI SpeechSynthesis test using Edge browser
+			"Eika": "[eh-eeka]"
+		}
 	},
 	STT: {
 		whisper_location: "./3rd_party/whisper/main.exe",

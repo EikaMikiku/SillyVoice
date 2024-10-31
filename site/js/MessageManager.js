@@ -14,6 +14,11 @@ class MessageManager {
 
 	bindEvents() {
 		this.socket.on("llm-genend", (msg) => {
+			if(!msg) {
+				this.setAvailable();
+				return;
+			}
+
 			this.clearMsgsWithBiggerIdx(msg.idx); //Remove existing msgs with that idx or later
 			let messagesContainer = this.msgContainerEl;
 

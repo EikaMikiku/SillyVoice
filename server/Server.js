@@ -58,7 +58,26 @@ class Server {
 		this.io.on("connection", (socket) => {
 			socket.on("chat-input", (text) => {
 				log.info("Server", "Received", text);
-				this.llm.stream(text);
+
+				let ok = this.config.activation_words.length > 0 ? false : true;
+				for(let word of this.config.activation_words) {
+					if(text.toLowerCase().startsWith(word.toLowerCase())) {
+						ok = true;
+
+						if(this.config.remove_activation_word) {
+							text = text.substring(word.length).trim();
+							text = text[0].toUpperCase() + text.substring(1);
+						}
+
+						break;
+					}
+				}
+
+				if(ok) {
+					this.llm.stream(text);
+				} else {
+					this.io.emit("llm-genend");
+				}
 			});
 
 			socket.on("reroll", (idx) => {

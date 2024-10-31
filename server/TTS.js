@@ -18,6 +18,12 @@ class TTS extends Eventful {
 		if(this.config.remove_emojis) {
 			txt = this.#removeEmojis(txt);
 		}
+		if(this.config.pronunciation_replacements) {
+			for(let replacement in this.config.pronunciation_replacements) {
+				let newString = this.config.pronunciation_replacements[replacement];
+				txt = txt.replaceAll(replacement, newString);
+			}
+		}
 
 		txt = txt.trim();
 		if(txt.length === 0) {
@@ -44,7 +50,7 @@ class TTS extends Eventful {
 	}
 
 	#removeEmojis(str) {
-		return str.replace(/[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]/gu, "");
+		return str.replace(/(?!\d)[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]/gu, "");
 	}
 }
 
