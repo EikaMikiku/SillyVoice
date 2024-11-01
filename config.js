@@ -16,7 +16,7 @@ module.exports = {
 			username: "admin",
 			password: "miku"
 		},
-		activation_words: ["Hey"],
+		activation_words: [/*"Hey"*/],
 		remove_activation_word: true,
 	},
 	TTS: {

@@ -57,7 +57,7 @@ class LLM extends Eventful {
 			//Avoid very short sentences
 			if(words.length >= this.config.sentence_split.min_word_count) {
 				this.currentSentence = newSentence;
-				this.notifyEvent("llm_sentence", this.currentSentence.trim());
+				this.notifyEvent("llm_sentence", this.removeStoppingStringsFromString(this.currentSentence.trim()));
 			}
 		}
 	}
@@ -70,10 +70,11 @@ class LLM extends Eventful {
 			let idx = this.currentGeneration.indexOf(this.currentSentence);
 			let newSentence = this.currentGeneration.substring(idx + this.currentSentence.length);
 			this.currentSentence = newSentence;
-			this.notifyEvent("llm_sentence", this.currentSentence.trim());
+			this.notifyEvent("llm_sentence", this.removeStoppingStringsFromString(this.currentSentence.trim()));
 		}
 
 		this.provider.getLastGenStats((count) => {
+			this.currentGeneration = this.removeStoppingStringsFromString(this.currentGeneration.trim());
 			this.currentChat.addMessage(this.currentGeneration, count, false, this.currentGeneration.trim());
 			this.notifyEvent("llm_genend_web", this.currentChat.messages[this.currentChat.messages.length - 1]);
 
@@ -108,6 +109,18 @@ class LLM extends Eventful {
 	edit(idx, newTxt) {
 		this.currentChat.messages.splice(idx);
 		this.stream(newTxt);
+	}
+
+	removeStoppingStringsFromString(str) {
+		let stoppingStrings = this.provider.samplers.stopping_strings;
+
+		for(let stop of stoppingStrings) {
+			if(str.trim().endsWith(stop)) {
+				return str.trim().substring(0, str.indexOf(stop));
+			}
+		}
+
+		return str;
 	}
 }
 
