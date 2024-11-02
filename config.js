@@ -4,7 +4,7 @@ module.exports = {
 		audio_log_location: "./data/audio/",
 		autio_log_filename: () => `${Date.now()}_VAD_Voice.wav`,
 		https: {
-			enabled: true,
+			enabled: false,
 			certs: {
 				key: "certs/privkey.pem",
 				cert: "certs/cert.pem",
@@ -12,7 +12,7 @@ module.exports = {
 			}
 		},
 		basic_auth: {
-			enabled: true,
+			enabled: false,
 			username: "admin",
 			password: "miku"
 		},
@@ -86,10 +86,12 @@ module.exports = {
 		sentence_split: {
 			min_word_count: 4
 		},
+
 		context_size: 16384, //overrides samplers too, should match with LLM
 		max_response_length: 512, //overrides samplers too
 		user: "Boss", //Also used as a stopping string
-		system_prompt: "You are {{char}}! Engage with {{user}} in a manner that is true to {{char}}'s personality. You do not break character for any reason. Incorporate character-specific mannerisms and quirks to make the experience more authentic. Draw from {{char}}'s profile and stored knowledge for specific details about {{char}}'s appearance, style, diction, syntax, and backstory. Only respond as {{char}}.",
+		system_prompt: "You are {{char}}! Only respond as {{char}}. Hold and drive a conversation with {{user}}",
+
 		//Prefix and suffix for system prompt and your inputs
 
 		/* ChatML
