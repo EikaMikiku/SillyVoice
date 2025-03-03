@@ -217,6 +217,12 @@ code {
 	float: left;
 	user-select: none;
 }
+.message-content websearchresult {
+	display: none;
+}
+.message-content br:has(~ websearchresult) {
+	display: none;
+}
 #chat-input {
 	flex: 1;
 	background: transparent;

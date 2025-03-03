@@ -6,7 +6,7 @@ class LLM extends Eventful {
 	currentGeneration = "";
 	currentSentence = "";
 
-	constructor(config) {
+	constructor(config, funcLLM) {
 		super();
 		this.config = config;
 		this.provider = new (require(`./llm_providers/${this.config.provider}.js`))(config);
@@ -17,6 +17,7 @@ class LLM extends Eventful {
 		this.provider.getTokenCount(this.currentChat.generatePermanentPrompt(), (count) => {
 			this.currentChat.permanentPromptTokens = count;
 		});
+		this.funcLLM = funcLLM;
 
 		//Add first char message
 		let firstMessage = this.currentChat.generateFirstMessage();
@@ -83,8 +84,14 @@ class LLM extends Eventful {
 		});
 	}
 
-	stream(prompt) {
+	async stream(prompt) {
 		log.info("LLM", "Generation START");
+
+		let instantAnswer = await this.funcLLM.getInstantAnswer(prompt);
+		if(instantAnswer) {
+			prompt += `\n\n<websearchresult>${instantAnswer}</websearchresult>`;
+		}
+
 		let msg = this.currentChat.generateUserMessage(prompt);
 
 		this.provider.getTokenCount(msg.formatted, (count) => {
@@ -98,17 +105,17 @@ class LLM extends Eventful {
 		});
 	}
 
-	reroll(idx) {
+	async reroll(idx) {
 		//Remove msgs after idx
 		this.currentChat.messages.splice(idx);
 		//Get last msg (will be user, since you can only roll non user msgs)
 		let lastUserMsg = this.currentChat.messages.pop();
-		this.stream(lastUserMsg.raw);
+		await this.stream(lastUserMsg.raw);
 	}
 
-	edit(idx, newTxt) {
+	async edit(idx, newTxt) {
 		this.currentChat.messages.splice(idx);
-		this.stream(newTxt);
+		await this.stream(newTxt);
 	}
 
 	removeStoppingStringsFromString(str) {

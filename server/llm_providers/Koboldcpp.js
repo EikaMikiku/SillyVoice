@@ -48,6 +48,26 @@ class KoboldCPP extends Eventful {
 		this.notifyEvent("stream_end");
 	}
 
+	async generate(promptJSON) {
+		let error = null;
+		let resp = await fetch(this.config.generate_url, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(promptJSON)
+		}).catch((e) => error = e);
+
+		if(error) {
+			log.error("KoboldCPP Generate Error", error);
+			return;
+		}
+
+		let output = await resp.json();
+
+		return output;
+	}
+
 	async getLastGenStats(cb) {
 		let error = null;
 		let resp = await fetch(this.config.last_gen_perf, {
