@@ -10,6 +10,8 @@ class Func_LLM extends Eventful {
 	}
 
 	async getInstantAnswer(userInput) {
+		if(!this.config.enabled) return "";
+
 		let text = await this.generate(userInput, this.config.primary_system_prompt);
 
 		if(text.length <= 7) {

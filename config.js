@@ -61,6 +61,7 @@ module.exports = {
 		api_key: "YOUR KEY HERE"
 	},
 	FCL: { //Function Calling LLM
+		enabled: false,
 		provider: "koboldcpp",
 		generate_url: "http://localhost:5020/api/v1/generate",
 		samplers: "./data/samplers/default.json", //SillyTavern compatible
