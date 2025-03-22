@@ -18,6 +18,9 @@ class TTS extends Eventful {
 		if(this.config.remove_emojis) {
 			txt = this.#removeEmojis(txt);
 		}
+		if(this.config.remove_stutter) {
+			txt = this.#removeStutter(txt);
+		}
 		if(this.config.pronunciation_replacements) {
 			for(let replacement in this.config.pronunciation_replacements) {
 				let newString = this.config.pronunciation_replacements[replacement];
@@ -25,7 +28,10 @@ class TTS extends Eventful {
 			}
 		}
 
+		txt = txt.replaceAll("\n", " "); //Remove new lines.
+		txt = txt.replaceAll(/\s+/g, " ");//Remove multiple spaces.
 		txt = txt.trim();
+
 		if(txt.length === 0) {
 			return;
 		}
@@ -51,6 +57,15 @@ class TTS extends Eventful {
 
 	#removeEmojis(str) {
 		return str.replace(/(?!\d)[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]/gu, "");
+	}
+
+	#removeStutter(str) {
+		//This regex matches repeated characters separated by hyphens
+		//For example: "H-h", "W-w", etc.
+		return str.replace(/([a-zA-Z])-\1/gi, (match, p1) => {
+			// Return just the first character (and preserve its case)
+			return p1;
+		});
 	}
 }
 
