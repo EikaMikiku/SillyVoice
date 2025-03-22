@@ -38,20 +38,47 @@ class TTS extends Eventful {
 
 		this.queue.push(txt);
 		if(!this.generating) {
-			this.process();
+			if(this.config.tts_type === "edge") {
+				this.processEdgeTTS();
+			} else if(this.config.tts_type === "orpheus") {
+				this.processOrpheusTTS();
+			}
 		}
 	}
 
-	async process() {
+	async processEdgeTTS() {
 		let txt = this.queue.shift();
 		if(txt) {
+			log.info("ETTS", "Generation START", txt);
 			this.generating = true;
 			let location = `${this.config.audio_log_location}${this.config.autio_log_filename()}`;
 			await this.etts.ttsPromise(txt, location);
 			this.notifyEvent("tts_result", location);
 			this.generating = false;
-			log.info("TTS", "Generation END", location);
-			this.process(); //try next queue item
+			log.info("ETTS", "Generation END", location);
+			this.processEdgeTTS(); //try next queue item
+		}
+	}
+
+	async processOrpheusTTS() {
+		let txt = this.queue.shift();
+		if(txt) {
+			log.info("OTTS", "Generation START", txt);
+			this.generating = true;
+			let location = `${this.config.audio_log_location}${this.config.autio_log_filename()}`;
+			let orpheus = spawn("python.exe", [
+				...this.config.orpheus_tts.args,
+				"--output",
+				location,
+				"--text",
+				txt
+			]);
+			orpheus.on("exit", () => {
+				this.notifyEvent("tts_result", location);
+				this.generating = false;
+				log.info("OTTS", "Generation END", location);
+				this.processOrpheusTTS(); //try next queue item
+			});
 		}
 	}
 

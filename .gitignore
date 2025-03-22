@@ -1,7 +1,7 @@
 node_modules/
 /models/
 data/cards/*.png
-!data/cards/Vika.png
+!data/cards/Iris.png
 data/chats/audio/*.wav
 3rd_party/*
 data/audio/*

@@ -20,6 +20,7 @@ module.exports = {
 		remove_activation_word: true,
 	},
 	TTS: {
+		tts_type: "edge", //or "edge"
 		edge_tts: {
 			//https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=tts
 			//Some voices dont work :(
@@ -34,10 +35,18 @@ module.exports = {
 			lang: "en",
 			rate: "+10%"
 		},
+		orpheus_tts: {
+			args: [
+				"./3rd_party/orpheustts/gguf_orpheus.py",
+				"--voice",
+				"tara" //"tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"
+			],
+		},
 		audio_log_location: "./data/audio/",
 		autio_log_filename: () => `${Date.now()}_TTS_Voice.wav`,
 		remove_asterisks: true,
 		remove_emojis: true,
+		remove_stutter: true,
 		pronunciation_replacements: {
 			//Should be tailored for a specific voice you plan on using.
 			//Can test using some online WebAPI SpeechSynthesis test using Edge browser
@@ -90,9 +99,6 @@ module.exports = {
 			}
 			*/
 		],
-		sentence_split: {
-			min_word_count: 4
-		},
 
 		context_size: 8192, //overrides samplers too, should match with LLM
 		max_response_length: 512, //overrides samplers too
@@ -178,7 +184,7 @@ Your output should be the full answer.`,
 			*/
 		],
 		sentence_split: {
-			min_word_count: 4
+			min_word_count: 15
 		},
 
 		context_size: 16384, //overrides samplers too, should match with LLM
@@ -215,7 +221,7 @@ Your output should be the full answer.`,
 		char_suffix: "<|END_OF_TURN_TOKEN|>",
 		//*/
 
-		card: "./data/cards/Vika.png"
+		card: "./data/cards/Iris.png"
 	},
 	Logger: {
 		show_level: "trace"

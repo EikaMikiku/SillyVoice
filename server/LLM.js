@@ -54,9 +54,9 @@ class LLM extends Eventful {
 			//New sentence without the new token
 			let newSentence = this.currentGeneration.substring(this.currentSentence.length + idx);
 			let words = newSentence.trim().split(/ +/g);
-
 			//Avoid very short sentences
 			if(words.length >= this.config.sentence_split.min_word_count) {
+				log.trace("LLM", "Sentence Words", words);
 				this.currentSentence = newSentence;
 				this.notifyEvent("llm_sentence", this.removeStoppingStringsFromString(this.currentSentence.trim()));
 			}
