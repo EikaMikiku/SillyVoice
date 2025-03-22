@@ -16,9 +16,9 @@ class Settings {
 
 		if(window.localStorage["localSettings"]) {
 			this.localSettings = JSON.parse(window.localStorage["localSettings"]);
-			this.localSettings.autoSend = this.localSettings.autoSend || this.defaultSettings.autoSend;
-			this.localSettings.autoSendDelay = this.localSettings.autoSendDelay || this.defaultSettings.autoSendDelay;
-			this.localSettings.volume = this.localSettings.volume || this.defaultSettings.volume;
+			this.localSettings.autoSend = this.localSettings.autoSend ?? this.defaultSettings.autoSend;
+			this.localSettings.autoSendDelay = this.localSettings.autoSendDelay ?? this.defaultSettings.autoSendDelay;
+			this.localSettings.volume = this.localSettings.volume ?? this.defaultSettings.volume;
 			this.loadLocalSettings();
 		} else {
 			this.localSettings = this.defaultSettings;
@@ -57,8 +57,8 @@ class Settings {
 	}
 
 	loadLocalSettings() {
-		this.autoSendToggleEl.checked = this.localSettings.autoSend || false;
-		this.autoSendDelayEl.value = parseInt(this.localSettings.autoSendDelay) || 0;
-		this.volumeEl.value = parseInt(this.localSettings.volume) || 80;
+		this.autoSendToggleEl.checked = this.localSettings.autoSend ?? false;
+		this.autoSendDelayEl.value = parseInt(this.localSettings.autoSendDelay) ?? 0;
+		this.volumeEl.value = parseInt(this.localSettings.volume) ?? 80;
 	}
 }
