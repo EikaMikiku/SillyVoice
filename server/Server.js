@@ -36,7 +36,9 @@ class Server {
 			try {
 				creds.key = fs.readFileSync(this.config.https.certs.key, "utf8");
 				creds.cert = fs.readFileSync(this.config.https.certs.cert, "utf8");
-				creds.ca = fs.readFileSync(this.config.https.certs.ca, "utf8");
+				if(this.config.https.certs.ca) {
+					creds.ca = fs.readFileSync(this.config.https.certs.ca, "utf8");
+				}
 			} catch {
 				//Trying to deal with symlinks...
 				let keyPath = fs.readlinkSync(this.config.https.certs.key);
@@ -44,7 +46,9 @@ class Server {
 				let caPath = fs.readlinkSync(this.config.https.certs.ca);
 				creds.key = fs.readFileSync(path.resolve(this.config.https.certs.key, "..", keyPath), "utf8");
 				creds.cert = fs.readFileSync(path.resolve(this.config.https.certs.cert, "..", certPath), "utf8");
-				creds.ca = fs.readFileSync(path.resolve(this.config.https.certs.ca, "..", caPath), "utf8");
+				if(this.config.https.certs.ca) {
+					creds.ca = fs.readFileSync(path.resolve(this.config.https.certs.ca, "..", caPath), "utf8");
+				}
 			}
 			server = https.Server(creds, app);
 			server.listen(this.config.port, () => log.info(`HTTPS Server running: https://localhost:${this.config.port}/`));
