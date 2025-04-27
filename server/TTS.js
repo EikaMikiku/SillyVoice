@@ -1,14 +1,32 @@
 const { spawn, spawnSync } = require("child_process");
 const { EdgeTTS } = require("node-edge-tts");
+const KokoroTTS = require("kokoro-js").KokoroTTS;
 const Eventful = require("./helpers/Eventful.js");
 
 class TTS extends Eventful {
 	constructor(config) {
 		super();
 		this.config = config;
-		this.etts = new EdgeTTS(this.config.edge_tts);
+
+		if(this.config.tts_type === "edge") {
+			this.etts = new EdgeTTS(this.config.edge_tts);
+			this.ttsProcessFunction = this.processEdgeTTS;
+		} else if(this.config.tts_type === "orpheus") {
+			this.ttsProcessFunction = this.processOrpheusTTS;
+		} else if(this.config.tts_type === "kokoro") {
+			this.ttsProcessFunction = this.processKokoroTTS;
+			this.ktts = null;
+		}
+
 		this.generating = false;
 		this.queue = [];
+
+		setInterval(() => {
+			//Check queue
+			if(!this.generating) {
+				this.ttsProcessFunction();
+			}
+		}, 100);
 	}
 
 	addToQueue(txt) {
@@ -37,12 +55,28 @@ class TTS extends Eventful {
 		}
 
 		this.queue.push(txt);
-		if(!this.generating) {
-			if(this.config.tts_type === "edge") {
-				this.processEdgeTTS();
-			} else if(this.config.tts_type === "orpheus") {
-				this.processOrpheusTTS();
+	}
+
+	async processKokoroTTS() {
+		let txt = this.queue.shift();
+		if(txt) {
+			if(!this.ktts) {
+				this.ktts = await KokoroTTS.from_pretrained(this.config.kokoro_tts.model_id, {
+					dtype: "fp16", // Options: "fp32", "fp16", "q8", "q4", "q4f16"
+					device: "cpu"
+				});
 			}
+
+			log.info("KTTS", "Generation START", txt);
+			this.generating = true;
+			const audio = await this.ktts.generate(txt, {
+				voice: this.config.kokoro_tts.voice,
+			});
+			let location = `${this.config.audio_log_location}${this.config.autio_log_filename()}`;
+			await audio.save(location);
+			this.notifyEvent("tts_result", location);
+			this.generating = false;
+			log.info("KTTS", "Generation END", location);
 		}
 	}
 
@@ -56,7 +90,6 @@ class TTS extends Eventful {
 			this.notifyEvent("tts_result", location);
 			this.generating = false;
 			log.info("ETTS", "Generation END", location);
-			this.processEdgeTTS(); //try next queue item
 		}
 	}
 
@@ -77,7 +110,6 @@ class TTS extends Eventful {
 				this.notifyEvent("tts_result", location);
 				this.generating = false;
 				log.info("OTTS", "Generation END", location);
-				this.processOrpheusTTS(); //try next queue item
 			});
 		}
 	}

@@ -42,6 +42,10 @@ module.exports = {
 				"tara" //"tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"
 			],
 		},
+		kokoro_tts: {
+			model_id: "onnx-community/Kokoro-82M-ONNX",
+			voice: "af_heart" //"af_nicole"
+		},
 		audio_log_location: "./data/audio/",
 		autio_log_filename: () => `${Date.now()}_TTS_Voice.wav`,
 		remove_asterisks: true,
@@ -193,6 +197,14 @@ Your output should be the full answer.`,
 		system_prompt: "You are {{char}}! Only respond as {{char}}. Hold and drive a conversation with {{user}}",
 
 		//Prefix and suffix for system prompt and your inputs
+		/* Gemma
+		system_prefix: "<start_of_turn>user\n",
+		system_suffix: "<end_of_turn>",
+		user_prefix: "<start_of_turn>user\n",
+		user_suffix: "<end_of_turn>",
+		char_prefix: "<start_of_turn>model\n",
+		char_suffix: "<end_of_turn>",
+		//*/
 
 		/* ChatML
 		system_prefix: "<|im_start|>system\n",
