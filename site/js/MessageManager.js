@@ -1,3 +1,70 @@
+class GrowingSentenceChunker {
+	constructor(onSentenceComplete = null, minWords = 10) {
+		this.buffer = "";
+		this.onSentenceComplete = onSentenceComplete;
+		this.minWords = minWords;
+		this.sentences = [];
+	}
+
+	// Add new tokens to the sentence buffer
+	addToken(token) {
+		this.buffer += token;
+		this.detectSentences();
+		return this.sentences.length > 0 ? this.sentences.pop() : null;
+	}
+
+	// Detect complete sentences in the buffer that have at least this.minWords words
+	detectSentences() {
+		// Regular expression to match sentence endings
+		// Matches periods, question marks, or exclamation marks followed by space or end of string
+		const sentenceEndRegex = /[.!?](?:\s|$)/g;
+
+		let match;
+		let lastIndex = 0;
+
+		// Find all sentence endings in the current buffer
+		while ((match = sentenceEndRegex.exec(this.buffer)) !== null) {
+			const sentenceEnd = match.index + 1; // Include the punctuation mark
+			const potentialSentence = this.buffer.substring(0, sentenceEnd).trim();
+
+			// Count words in the potential sentence
+			const wordCount = potentialSentence.split(/\s+/).filter(word => word.length > 0).length;
+
+			// Only process if we have at least this.minWords words
+			if (wordCount >= this.minWords) {
+				// Store the detected sentence
+				this.sentences.unshift(potentialSentence);
+
+				// If callback is provided, call it with the sentence
+				if (this.onSentenceComplete) {
+					this.onSentenceComplete(potentialSentence);
+				}
+
+				// Remove the processed sentence from the buffer
+				this.buffer = this.buffer.substring(sentenceEnd).trim();
+
+				// Reset regex search since we've modified the buffer
+				sentenceEndRegex.lastIndex = 0;
+			} else {
+				// If the sentence is too short, continue searching from the next position
+				continue;
+			}
+		}
+	}
+
+	// Get any remaining text that hasn't formed a complete sentence
+	getRemainingText() {
+		return this.buffer;
+	}
+
+	// Force output of any remaining text in the buffer
+	flush() {
+		const remaining = this.buffer;
+		this.buffer = "";
+		return remaining;
+	}
+}
+
 class MessageManager {
 	constructor(socket) {
 		this.socket = socket;
@@ -6,6 +73,10 @@ class MessageManager {
 		this.chatSendEl = document.getElementById("chat-send");
 		this.msgContainerEl = document.getElementById("messages-container");
 		this.autoSendProgress = document.getElementById("auto-send-progress");
+		this.sentence = new GrowingSentenceChunker((txt) => {
+			console.log("Sentence chunker", txt);
+			this.socket.emit("tts-request", txt);
+		});
 
 		this.autoSendTimer;
 
@@ -29,7 +100,7 @@ class MessageManager {
 				span.innerHTML = this.processText(msg.raw);
 				let roll = tempMsg.querySelector("roll");
 				tempMsg.dataset.idx = msg.idx;
-				this.socket.emit("tts-request", msg.raw);
+				this.sentence.flush();
 			} else {
 				let msgEl = this.createMessageElement(msg.idx, msg.raw, msg.isUser);
 				messagesContainer.appendChild(msgEl);
@@ -58,6 +129,8 @@ class MessageManager {
 				span.original += token;
 				span.innerHTML = this.processText(span.original);
 			}
+
+			this.sentence.addToken(token);
 
 			this.scrollChatDown();
 		});
