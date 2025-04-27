@@ -94,6 +94,10 @@ class Server {
 				this.stt.transcribe(location);
 			});
 
+			socket.on("tts-request", (text) => {
+				this.tts.addToQueue(text);
+			});
+
 			socket.emit("settings", {
 				cardMetadata: this.llm.card.metadata,
 				card: this.llm.config.card,
@@ -112,10 +116,6 @@ class Server {
 		this.stt.on("stt_result", (txt) => {
 			log.info("STT", "Result", txt);
 			this.io.emit("stt-result", txt);
-		});
-
-		this.llm.on("llm_sentence", (sentence) => {
-			this.tts.addToQueue(sentence);
 		});
 
 		this.tts.on("tts_result", (filepath) => {

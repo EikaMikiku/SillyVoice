@@ -4,7 +4,6 @@ const Eventful = require("./helpers/Eventful.js");
 
 class LLM extends Eventful {
 	currentGeneration = "";
-	currentSentence = "";
 
 	constructor(config, funcLLM) {
 		super();
@@ -30,57 +29,16 @@ class LLM extends Eventful {
 		this.currentGeneration += token;
 		log.trace("LLM", "Token", token);
 		this.notifyEvent("llm_token", token);
-
-		//Check if token ends a sentence. has single .?! near the end.
-		//This specifies end of sentence
-		//Non terminator then terminator then maybe a non terminator
-		//test set:
-		/*
-			...
-			wow.
-			hi
-			some."
-			.) No
-			.)
-			.
-			 .
-			."
-			???
-			!!!
-		*/
-		let phaseMatch = token.trim().match(/(?<![\.])[\.\!\?](?![\.])/);
-		if(phaseMatch && token.trim().endsWith(phaseMatch[0])) {
-			let idx = this.currentGeneration.indexOf(this.currentSentence);
-			//New sentence without the new token
-			let newSentence = this.currentGeneration.substring(this.currentSentence.length + idx);
-			let words = newSentence.trim().split(/ +/g);
-			//Avoid very short sentences
-			if(words.length >= this.config.sentence_split.min_word_count) {
-				log.trace("LLM", "Sentence Words", words);
-				this.currentSentence = newSentence;
-				this.notifyEvent("llm_sentence", this.removeStoppingStringsFromString(this.currentSentence.trim()));
-			}
-		}
 	}
 
 	onEnd() {
 		log.info("LLM", "Generation END", this.currentGeneration.trim());
 
-		//Check if last sentence needs to be manually triggered, as not all LLM outputs ends with .?!
-		if(!this.currentGeneration.endsWith(this.currentSentence) || this.currentSentence.length === 0) {
-			let idx = this.currentGeneration.indexOf(this.currentSentence);
-			let newSentence = this.currentGeneration.substring(idx + this.currentSentence.length);
-			this.currentSentence = newSentence;
-			this.notifyEvent("llm_sentence", this.removeStoppingStringsFromString(this.currentSentence.trim()));
-		}
-
 		this.provider.getLastGenStats((count) => {
-			this.currentGeneration = this.removeStoppingStringsFromString(this.currentGeneration.trim());
 			this.currentChat.addMessage(this.currentGeneration, count, false, this.currentGeneration.trim());
 			this.notifyEvent("llm_genend_web", this.currentChat.messages[this.currentChat.messages.length - 1]);
 
 			this.currentGeneration = "";
-			this.currentSentence = "";
 		});
 	}
 

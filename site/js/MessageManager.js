@@ -29,6 +29,7 @@ class MessageManager {
 				span.innerHTML = this.processText(msg.raw);
 				let roll = tempMsg.querySelector("roll");
 				tempMsg.dataset.idx = msg.idx;
+				this.socket.emit("tts-request", msg.raw);
 			} else {
 				let msgEl = this.createMessageElement(msg.idx, msg.raw, msg.isUser);
 				messagesContainer.appendChild(msgEl);
