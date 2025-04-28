@@ -1,5 +1,5 @@
 class GrowingSentenceChunker {
-	constructor(onSentenceComplete = null, minWords = 10) {
+	constructor(onSentenceComplete = null, minWords = 6) {
 		this.buffer = "";
 		this.onSentenceComplete = onSentenceComplete;
 		this.minWords = minWords;

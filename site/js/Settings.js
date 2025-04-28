@@ -7,11 +7,13 @@ class Settings {
 		this.autoSendToggleEl = document.getElementById("auto-send-toggle");
 		this.autoSendDelayEl = document.getElementById("auto-send-delay");
 		this.volumeEl = document.getElementById("volume");
+		this.voicePanEl = document.getElementById("voice-pan-toggle");
 
 		this.defaultSettings = {
 			autoSend: false,
 			autoSendDelay: 0,
-			volume: 80
+			volume: 80,
+			voicePan: false
 		}
 
 		if(window.localStorage["localSettings"]) {
@@ -19,6 +21,7 @@ class Settings {
 			this.localSettings.autoSend = this.localSettings.autoSend ?? this.defaultSettings.autoSend;
 			this.localSettings.autoSendDelay = this.localSettings.autoSendDelay ?? this.defaultSettings.autoSendDelay;
 			this.localSettings.volume = this.localSettings.volume ?? this.defaultSettings.volume;
+			this.localSettings.voicePan = this.localSettings.voicePan ?? this.defaultSettings.voicePan;
 			this.loadLocalSettings();
 		} else {
 			this.localSettings = this.defaultSettings;
@@ -50,6 +53,11 @@ class Settings {
 			this.localSettings.volume = parseInt(e.target.value);
 			this.updateLocalSettings();
 		});
+
+		this.voicePanEl.addEventListener("change", (e) => {
+			this.localSettings.voicePan = e.target.checked;
+			this.updateLocalSettings();
+		});
 	}
 
 	updateLocalSettings() {
@@ -60,5 +68,6 @@ class Settings {
 		this.autoSendToggleEl.checked = this.localSettings.autoSend ?? false;
 		this.autoSendDelayEl.value = parseInt(this.localSettings.autoSendDelay) ?? 0;
 		this.volumeEl.value = parseInt(this.localSettings.volume) ?? 80;
+		this.voicePanEl.checked = this.localSettings.voicePan ?? false;
 	}
 }

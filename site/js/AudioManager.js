@@ -5,6 +5,9 @@ class AudioManager {
 		this.analyser;
 		this.currentAudioBuffer;
 
+		this.pannerNode;
+		this.pannerNodeValues = [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1];
+
 		this.queue = [];
 		this.playing = false;
 
@@ -35,20 +38,31 @@ class AudioManager {
 	play(audioURL) {
 		this.audioCtx = this.audioCtx || new AudioContext();
 		this.analyser = this.analyser || this.audioCtx.createAnalyser();
+		this.pannerNode = this.pannerNode || this.audioCtx.createStereoPanner();
 		this.analyser.smoothingTimeConstant = 0.8;
 		this.analyser.fftSize = 256;
 		this.currentAudioBuffer = new Uint8Array(this.analyser.frequencyBinCount);
+
+		if(window.settings.localSettings.voicePan) {
+			let idx = Math.floor(Math.random() * this.pannerNodeValues.length);
+			this.pannerNode.pan.value = this.pannerNodeValues[idx];
+		} else {
+			this.pannerNode.pan.value = 0;
+		}
 
 		let audio = new Audio(audioURL);
 		audio.crossOrigin = "anonymous";
 		let input = this.audioCtx.createMediaElementSource(audio);
 		input.connect(this.analyser);
-		this.analyser.connect(this.audioCtx.destination);
+		this.analyser.connect(this.pannerNode);
+		this.pannerNode.connect(this.audioCtx.destination);
+
 		audio.addEventListener("ended", () => {
 			this.playing = false;
 			URL.revokeObjectURL(audioURL);
 			this.startQueue();
 		});
+
 		audio.volume = (window.settings.localSettings.volume || 100) / 100;
 		audio.play();
 		this.playing = true;
