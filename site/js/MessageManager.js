@@ -52,11 +52,6 @@ class GrowingSentenceChunker {
 		}
 	}
 
-	// Get any remaining text that hasn't formed a complete sentence
-	getRemainingText() {
-		return this.buffer;
-	}
-
 	// Force output of any remaining text in the buffer
 	flush() {
 		const remaining = this.buffer;
@@ -100,7 +95,11 @@ class MessageManager {
 				span.innerHTML = this.processText(msg.raw);
 				let roll = tempMsg.querySelector("roll");
 				tempMsg.dataset.idx = msg.idx;
-				this.sentence.flush();
+
+				let lastSentenceBuffer = this.sentence.flush();
+				if(lastSentenceBuffer.trim().length > 0) {
+					this.socket.emit("tts-request", lastSentenceBuffer);
+				}
 			} else {
 				let msgEl = this.createMessageElement(msg.idx, msg.raw, msg.isUser);
 				messagesContainer.appendChild(msgEl);

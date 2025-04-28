@@ -62,7 +62,7 @@ class TTS extends Eventful {
 		if(txt) {
 			if(!this.ktts) {
 				this.ktts = await KokoroTTS.from_pretrained(this.config.kokoro_tts.model_id, {
-					dtype: "fp16", // Options: "fp32", "fp16", "q8", "q4", "q4f16"
+					dtype: this.config.kokoro_tts.quant,
 					device: "cpu"
 				});
 			}

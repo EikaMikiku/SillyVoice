@@ -20,7 +20,7 @@ module.exports = {
 		remove_activation_word: true,
 	},
 	TTS: {
-		tts_type: "edge", //or "edge"
+		tts_type: "kokoro", //edge/orpheus/kokoro
 		edge_tts: {
 			//https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=tts
 			//Some voices dont work :(
@@ -43,6 +43,7 @@ module.exports = {
 			],
 		},
 		kokoro_tts: {
+			quant: "fp32", // Options: "fp32", "fp16", "q8", "q4", "q4f16"
 			model_id: "onnx-community/Kokoro-82M-ONNX",
 			voice: "af_heart" //"af_nicole"
 		},
@@ -187,9 +188,6 @@ Your output should be the full answer.`,
 			}
 			*/
 		],
-		sentence_split: {
-			min_word_count: 15
-		},
 
 		context_size: 16384, //overrides samplers too, should match with LLM
 		max_response_length: 512, //overrides samplers too
